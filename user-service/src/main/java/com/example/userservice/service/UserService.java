@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,10 +23,18 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public UsersDto signup(SignupDto signupDto) {
+        validateDuplicateUserId(signupDto.getUserId());
+
         signupDto.setPassword(passwordEncoder.encode(signupDto.getPassword()));
-        Users users = Users.of(signupDto);
+        Users users = Users.createUser(signupDto.getUserId(), signupDto.getPassword(), signupDto.getName());
         usersRepository.save(users);
         return UsersDto.of(users);
+    }
+
+    private void validateDuplicateUserId(String userId) {
+        if (usersRepository.existsByUserId(userId)) {
+            throw new CustomException(HttpStatus.CONFLICT, "Duplicate User Id");
+        }
     }
 
     public UsersDto getUser(String userId) {

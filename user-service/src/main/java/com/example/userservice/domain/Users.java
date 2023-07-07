@@ -1,6 +1,5 @@
 package com.example.userservice.domain;
 
-import com.example.userservice.dto.SignupDto;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +26,7 @@ public class Users {
     @GeneratedValue
     private Long id;
 
-    @Column(name="user_id", length = 50, nullable = false)
+    @Column(name="user_id", length = 50, nullable = false, unique = true)
     private String userId;
 
     @Column(nullable = false)
@@ -43,11 +42,11 @@ public class Users {
     @LastModifiedDate
     private LocalDateTime modDate;
 
-    public static Users of(SignupDto signupDto) {
+    public static Users createUser(String userId, String password, String name) {
         return Users.builder()
-            .userId(signupDto.getUserId())
-            .password(signupDto.getPassword())
-            .name(signupDto.getName())
+            .userId(userId)
+            .password(password)
+            .name(name)
             .build();
     }
 

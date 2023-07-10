@@ -6,25 +6,26 @@ import com.example.userservice.dto.UsersDto;
 import com.example.userservice.service.UserService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/user-service")
 public class UsersController {
 
     private final UserService userService;
+    private final Environment env;
 
     @GetMapping("/user/health_check")
     public String status() {
-        return "It's Working in User Service";
+        return "It's Working in User Service"
+            + ", token secret= " + env.getProperty("token.secret")
+            + ", token expiration time=" + env.getProperty("token.expiration_time");
     }
 
     @PostMapping("/user/signup")

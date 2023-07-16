@@ -47,9 +47,9 @@ public class Brands extends BaseEntity {
     public static Brands createBrand(String name, Integer depositAmount, Long adminId, Boolean isActive) {
         return Brands.builder()
             .name(name)
-            .depositAmount(depositAmount)
+            .depositAmount(depositAmount == null ? 0 : depositAmount)
             .adminId(adminId)
-            .isActive(isActive)
+            .isActive(isActive == null ? Boolean.TRUE : isActive)
             .build();
     }
 

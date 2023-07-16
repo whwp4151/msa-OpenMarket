@@ -2,6 +2,7 @@ package com.example.brandservice.domain;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -28,11 +29,8 @@ public class BrandAccount extends BaseEntity {
     @OneToOne(mappedBy = "brandAccount", fetch = FetchType.LAZY)
     private Brands brand;
 
-    private String accountNumber;
-
-    private String bankName;
-
-    private String holderName;
+    @Embedded
+    private BankInfo bankInfo;
 
     //==연관관계 메서드==//
     public void setBrand(Brands brand) {

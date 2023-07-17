@@ -17,11 +17,14 @@ public class BrandAccountDto {
 
     private Long brandAccountId;
 
+    private String loginId;
+
     private BankInfo bankInfo;
 
     public static BrandAccountDto of(BrandAccount brandAccount) {
         return BrandAccountDto.builder()
             .brandAccountId(brandAccount.getId())
+            .loginId(brandAccount.getLoginId())
             .bankInfo(brandAccount.getBankInfo())
             .build();
     }

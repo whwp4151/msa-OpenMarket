@@ -4,6 +4,7 @@ import com.example.userservice.dto.SigninDto;
 import com.example.userservice.dto.UsersDto;
 import com.example.userservice.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.IOException;
@@ -54,8 +55,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String username = ((User) authResult.getPrincipal()).getUsername();
         UsersDto userDetails = userService.getUser(username);
 
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put("roles", "ROLE_USER");
+
         String token = Jwts.builder()
             .setSubject(userDetails.getUserId())
+            .addClaims(claims)
             .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
             .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
             .compact();

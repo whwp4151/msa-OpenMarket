@@ -26,7 +26,7 @@ public class Users {
     @GeneratedValue
     private Long id;
 
-    @Column(name="user_id", length = 50, nullable = false, unique = true)
+    @Column(length = 50, nullable = false, unique = true)
     private String userId;
 
     @Column(nullable = false)

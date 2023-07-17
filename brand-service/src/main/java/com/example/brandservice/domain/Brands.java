@@ -56,7 +56,6 @@ public class Brands extends BaseEntity {
     //==연관관계 메서드==//
     public void setBrandAccount(BrandAccount brandAccount) {
         this.brandAccount = brandAccount;
-        brandAccount.setBrand(this);
     }
 
     public void addTransaction(Transaction transaction) {

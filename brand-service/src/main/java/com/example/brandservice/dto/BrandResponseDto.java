@@ -27,10 +27,6 @@ public class BrandResponseDto {
 
     private Boolean isActive;
 
-    private BrandAccountDto brandAccount;
-
-    private List<TransactionDto> transactions;
-
     public static BrandResponseDto of(Brands brand) {
         return BrandResponseDto.builder()
             .brandId(brand.getId())
@@ -38,11 +34,6 @@ public class BrandResponseDto {
             .depositAmount(brand.getDepositAmount())
             .adminId(brand.getAdminId())
             .isActive(brand.getIsActive())
-            .brandAccount(brand.getBrandAccount() == null ? null : BrandAccountDto.of(brand.getBrandAccount()))
-            .transactions(Collections.isEmpty(brand.getTransactions()) ? null : brand.getTransactions().stream()
-                .map(TransactionDto::of)
-                .collect(Collectors.toList())
-            )
             .build();
     }
 

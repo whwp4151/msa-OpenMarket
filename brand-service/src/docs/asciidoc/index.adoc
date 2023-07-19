@@ -1,0 +1,7 @@
+= REST API
+
+[[Brand]]
+
+== 브랜드 API
+
+include::{snippets}/create-brand/http-request.adoc[]

@@ -47,6 +47,14 @@ spring:
         - id: brand-service
           uri: lb://BRAND-SERVICE
           predicates:
+            - Path=/brand-service/login
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/brand-service/(?<segment>.*), /$\{segment}
+        - id: brand-service
+          uri: lb://BRAND-SERVICE
+          predicates:
             - Path=/brand-service/**
           filters:
             - RemoveRequestHeader=Cookie

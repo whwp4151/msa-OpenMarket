@@ -10,15 +10,20 @@ import com.example.brandservice.dto.BrandResponseDto;
 import com.example.brandservice.exception.CustomException;
 import com.example.brandservice.repository.BrandAccountRepository;
 import com.example.brandservice.repository.BrandsRepository;
+import java.util.Collections;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BrandService {
+public class BrandService implements UserDetailsService {
 
     private final BrandsRepository brandsRepository;
     private final BrandAccountRepository brandAccountRepository;
@@ -52,6 +57,24 @@ public class BrandService {
         if (brandAccountRepository.existsByLoginId(loginId)) {
             throw new CustomException(HttpStatus.CONFLICT, "Duplicate Login Id");
         }
+    }
+
+    public BrandAccountDto getBrandAccount(String loginId) {
+        BrandAccount brandAccount = brandAccountRepository.findByLoginId(loginId)
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand Account not found"));
+
+        return BrandAccountDto.of(brandAccount);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        BrandAccount brandAccount = brandAccountRepository.findByLoginId(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Brand Account not found"));
+
+        return new User(brandAccount.getLoginId(), brandAccount.getPassword(),
+            true, true, true, true,
+            Collections.emptyList()
+        );
     }
 
 }

@@ -1,6 +1,5 @@
 package com.example.brandservice.controller;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -24,7 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-class BrandControllerTest {
+class BrandAdminControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -41,7 +40,7 @@ class BrandControllerTest {
         String content = new Gson().toJson(brandRequestDto);
 
         //when
-        ResultActions actions = mockMvc.perform(RestDocumentationRequestBuilders.post("/brand")
+        ResultActions actions = mockMvc.perform(RestDocumentationRequestBuilders.post("/admin/brand")
             .content(content)
             .contentType(MediaType.APPLICATION_JSON));
 

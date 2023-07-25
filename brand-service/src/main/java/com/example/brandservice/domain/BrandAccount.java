@@ -7,16 +7,14 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BrandAccount extends BaseEntity {
 
     @Id
@@ -25,7 +23,7 @@ public class BrandAccount extends BaseEntity {
     private Long id;
 
     @OneToOne(mappedBy = "brandAccount", fetch = FetchType.LAZY)
-    private Brands brand;
+    private Brand brand;
 
     @Column(length = 50, nullable = false, unique = true)
     private String loginId;
@@ -36,7 +34,15 @@ public class BrandAccount extends BaseEntity {
     @Embedded
     private BankInfo bankInfo;
 
-    public static BrandAccount createBrandAccount(Brands brand, String loginId, String password, BankInfo bankInfo) {
+    @Builder
+    public BrandAccount(Brand brand, String loginId, String password, BankInfo bankInfo) {
+        this.brand = brand;
+        this.loginId = loginId;
+        this.password = password;
+        this.bankInfo = bankInfo;
+    }
+
+    public static BrandAccount create(Brand brand, String loginId, String password, BankInfo bankInfo) {
         BrandAccount brandAccount = BrandAccount.builder()
             .brand(brand)
             .loginId(loginId)
@@ -50,7 +56,7 @@ public class BrandAccount extends BaseEntity {
     }
 
     //==연관관계 메서드==//
-    public void setBrand(Brands brand) {
+    public void setBrand(Brand brand) {
         this.brand = brand;
     }
 

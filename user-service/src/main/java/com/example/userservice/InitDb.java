@@ -1,6 +1,6 @@
 package com.example.userservice;
 
-import com.example.userservice.domain.Users;
+import com.example.userservice.domain.User;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -31,15 +31,15 @@ public class InitDb {
         private final BCryptPasswordEncoder passwordEncoder;
 
         public void dbInit1() {
-            Users user1 = createUser("test", passwordEncoder.encode("1234"), "테스트");
-            Users user2 = createUser("test2", passwordEncoder.encode("1234"), "테스트2");
+            User user1 = createUser("test", passwordEncoder.encode("1234"), "테스트");
+            User user2 = createUser("test2", passwordEncoder.encode("1234"), "테스트2");
 
             persistEntities(user1, user2);
         }
 
         public void dbInit2() {
-            Users user1 = createUser("user", passwordEncoder.encode("1234"), "유저");
-            Users user2 = createUser("user2", passwordEncoder.encode("1234"), "유저2");
+            User user1 = createUser("user", passwordEncoder.encode("1234"), "유저");
+            User user2 = createUser("user2", passwordEncoder.encode("1234"), "유저2");
 
             persistEntities(user1, user2);
         }
@@ -50,8 +50,8 @@ public class InitDb {
             }
         }
 
-        private Users createUser(String test, String password, String name) {
-            return Users.createUser(test, password, name);
+        private User createUser(String test, String password, String name) {
+            return User.create(test, password, name);
         }
 
     }

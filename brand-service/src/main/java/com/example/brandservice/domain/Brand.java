@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Brands extends BaseEntity {
+public class Brand extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -42,7 +42,7 @@ public class Brands extends BaseEntity {
     private List<Transaction> transactions;
 
     @Builder
-    public Brands(String name, Integer depositAmount, Long adminId, Boolean isActive) {
+    public Brand(String name, Integer depositAmount, Long adminId, Boolean isActive) {
         this.name = name;
         this.depositAmount = depositAmount;
         this.adminId = adminId;
@@ -50,8 +50,8 @@ public class Brands extends BaseEntity {
     }
 
     //==생성 메서드==//
-    public static Brands createBrand(String name, Integer depositAmount, Long adminId, Boolean isActive) {
-        return Brands.builder()
+    public static Brand create(String name, Integer depositAmount, Long adminId, Boolean isActive) {
+        return Brand.builder()
             .name(name)
             .depositAmount(depositAmount == null ? 0 : depositAmount)
             .adminId(adminId)

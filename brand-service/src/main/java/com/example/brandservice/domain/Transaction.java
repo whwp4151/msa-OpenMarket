@@ -30,7 +30,7 @@ public class Transaction extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
-    private Brands brand;
+    private Brand brand;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
@@ -40,7 +40,7 @@ public class Transaction extends BaseEntity {
     private LocalDateTime transactionDate;
 
     //==연관관계 메서드==//
-    public void setBrand(Brands brand) {
+    public void setBrand(Brand brand) {
         this.brand = brand;
     }
 

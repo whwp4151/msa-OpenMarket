@@ -1,6 +1,6 @@
 package com.example.userservice.service;
 
-import com.example.userservice.domain.Users;
+import com.example.userservice.domain.User;
 import com.example.userservice.dto.SignupDto;
 import com.example.userservice.dto.UsersDto;
 import com.example.userservice.exception.CustomException;
@@ -8,7 +8,6 @@ import com.example.userservice.repository.UsersRepository;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,9 +25,9 @@ public class UserService implements UserDetailsService {
         validateDuplicateUserId(signupDto.getUserId());
 
         signupDto.setPassword(passwordEncoder.encode(signupDto.getPassword()));
-        Users users = Users.createUser(signupDto.getUserId(), signupDto.getPassword(), signupDto.getName());
-        usersRepository.save(users);
-        return UsersDto.of(users);
+        User user = User.create(signupDto.getUserId(), signupDto.getPassword(), signupDto.getName());
+        usersRepository.save(user);
+        return UsersDto.of(user);
     }
 
     private void validateDuplicateUserId(String userId) {
@@ -38,17 +37,17 @@ public class UserService implements UserDetailsService {
     }
 
     public UsersDto getUser(String userId) {
-        Users users = usersRepository.findByUserId(userId)
+        User user = usersRepository.findByUserId(userId)
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "User not found"));
-        return UsersDto.of(users);
+        return UsersDto.of(user);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Users users = usersRepository.findByUserId(username)
+        User user = usersRepository.findByUserId(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new User(users.getUserId(), users.getPassword(),
+        return new org.springframework.security.core.userdetails.User(user.getUserId(), user.getPassword(),
             true, true, true, true,
             Collections.emptyList()
         );

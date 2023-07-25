@@ -2,7 +2,7 @@ package com.example.brandservice.service;
 
 import com.example.brandservice.domain.BankInfo;
 import com.example.brandservice.domain.BrandAccount;
-import com.example.brandservice.domain.Brands;
+import com.example.brandservice.domain.Brand;
 import com.example.brandservice.dto.BrandAccountDto;
 import com.example.brandservice.dto.BrandAccountRequestDto;
 import com.example.brandservice.dto.BrandRequestDto;
@@ -30,7 +30,7 @@ public class BrandService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public BrandResponseDto createBrand(BrandRequestDto brandRequestDto) {
-        Brands brand = Brands.createBrand(brandRequestDto.getName(), brandRequestDto.getDepositAmount(), brandRequestDto.getAdminId(), brandRequestDto.getIsActive());
+        Brand brand = Brand.create(brandRequestDto.getName(), brandRequestDto.getDepositAmount(), brandRequestDto.getAdminId(), brandRequestDto.getIsActive());
         brandsRepository.save(brand);
 
         return BrandResponseDto.of(brand);
@@ -40,12 +40,12 @@ public class BrandService implements UserDetailsService {
     public BrandAccountDto createBrandAccount(BrandAccountRequestDto brandAccountRequestDto) {
         validateDuplicateLoginId(brandAccountRequestDto.getLoginId());
 
-        Brands brand = brandsRepository.findById(brandAccountRequestDto.getBrandId())
+        Brand brand = brandsRepository.findById(brandAccountRequestDto.getBrandId())
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found"));
 
         String password = passwordEncoder.encode(brandAccountRequestDto.getPassword());
 
-        BrandAccount brandAccount = BrandAccount.createBrandAccount(brand, brandAccountRequestDto.getLoginId(), password,
+        BrandAccount brandAccount = BrandAccount.create(brand, brandAccountRequestDto.getLoginId(), password,
             new BankInfo(brandAccountRequestDto.getAccountNumber(), brandAccountRequestDto.getBankName(), brandAccountRequestDto.getHolderName()));
 
         brandAccountRepository.save(brandAccount);

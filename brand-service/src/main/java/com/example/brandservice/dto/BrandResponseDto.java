@@ -1,9 +1,6 @@
 package com.example.brandservice.dto;
 
-import com.example.brandservice.domain.Brands;
-import io.jsonwebtoken.lang.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.brandservice.domain.Brand;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +24,7 @@ public class BrandResponseDto {
 
     private Boolean isActive;
 
-    public static BrandResponseDto of(Brands brand) {
+    public static BrandResponseDto of(Brand brand) {
         return BrandResponseDto.builder()
             .brandId(brand.getId())
             .name(brand.getName())

@@ -1,6 +1,6 @@
 package com.example.userservice.dto;
 
-import com.example.userservice.domain.Users;
+import com.example.userservice.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,11 +16,11 @@ public class UsersDto {
     private String userId;
     private String name;
 
-    public static UsersDto of(Users users) {
+    public static UsersDto of(User user) {
         return UsersDto.builder()
-            .id(users.getId())
-            .userId(users.getUserId())
-            .name(users.getName())
+            .id(user.getId())
+            .userId(user.getUserId())
+            .name(user.getName())
             .build();
     }
 

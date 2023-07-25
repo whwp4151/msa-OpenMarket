@@ -62,6 +62,10 @@
 
 [[Brand]]
 
+== 브랜드
+
 == 브랜드 (관리자 서비스)
 === 브랜드 생성
 operation::create-brand[snippets='curl-request,http-request,http-response,request-fields,response-fields']
+=== 브랜드 계정 생성
+operation::create-brand-account[snippets='curl-request,http-request,http-response,request-fields,response-fields']

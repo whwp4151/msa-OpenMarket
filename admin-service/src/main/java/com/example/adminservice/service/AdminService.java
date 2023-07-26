@@ -3,7 +3,11 @@ package com.example.adminservice.service;
 import com.example.adminservice.domain.Admin;
 import com.example.adminservice.dto.AdminRequestDto;
 import com.example.adminservice.dto.AdminResponseDto;
+import com.example.adminservice.dto.Result;
 import com.example.adminservice.exception.CustomException;
+import com.example.adminservice.feign.client.BrandServiceClient;
+import com.example.adminservice.feign.dto.BrandRequestDto;
+import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +20,7 @@ public class AdminService {
 
     private final AdminRepository adminRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final BrandServiceClient brandServiceClient;
 
     public AdminResponseDto createAdmin(AdminRequestDto dto) {
         validateDuplicateUserId(dto.getUserId());
@@ -34,4 +39,7 @@ public class AdminService {
         }
     }
 
+    public Result<BrandResponseDto> createBrand(BrandRequestDto brandRequestDto) {
+        return brandServiceClient.createBrand(brandRequestDto);
+    }
 }

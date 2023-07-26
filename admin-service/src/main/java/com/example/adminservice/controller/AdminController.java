@@ -3,6 +3,8 @@ package com.example.adminservice.controller;
 import com.example.adminservice.dto.AdminRequestDto;
 import com.example.adminservice.dto.AdminResponseDto;
 import com.example.adminservice.dto.Result;
+import com.example.adminservice.feign.dto.BrandRequestDto;
+import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.service.AdminService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ public class AdminController {
 
     @GetMapping("/health_check")
     public String status() {
-        return "It's Working in Brand Service"
+        return "It's Working in Admin Service"
             + ", token secret= " + env.getProperty("admin.secret")
             + ", token expiration time=" + env.getProperty("admin.expiration_time");
     }
@@ -32,6 +34,11 @@ public class AdminController {
     public ResponseEntity<Result> signup(@RequestBody @Valid AdminRequestDto dto) {
         AdminResponseDto responseDto = adminService.createAdmin(dto);
         return ResponseEntity.ok(Result.createSuccessResult(responseDto));
+    }
+
+    @PostMapping("/brand")
+    public ResponseEntity<Result> createBrand(@RequestBody @Valid BrandRequestDto brandRequestDto) {
+        return ResponseEntity.ok(adminService.createBrand(brandRequestDto));
     }
 
 }

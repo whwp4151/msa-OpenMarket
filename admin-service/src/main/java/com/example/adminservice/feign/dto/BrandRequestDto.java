@@ -21,6 +21,4 @@ public class BrandRequestDto {
 
     private Long adminId;
 
-    private Boolean isActive;
-
 }

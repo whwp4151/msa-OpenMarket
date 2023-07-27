@@ -1,5 +1,6 @@
 package com.example.adminservice.feign.dto;
 
+import com.example.adminservice.feign.dto.enums.BrandStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,6 @@ public class BrandResponseDto {
 
     private Long adminId;
 
-    private Boolean isActive;
+    private BrandStatus status;
 
 }

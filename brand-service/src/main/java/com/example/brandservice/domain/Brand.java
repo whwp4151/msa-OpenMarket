@@ -1,10 +1,13 @@
 package com.example.brandservice.domain;
 
+import com.example.brandservice.domain.enums.BrandStatus;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -32,7 +35,8 @@ public class Brand extends BaseEntity {
 
     private Long adminId;
 
-    private Boolean isActive;
+    @Enumerated(EnumType.STRING)
+    private BrandStatus status; // 브랜드 상태 (입점 신청 중, 승인, 거절 등)
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "brand_account_id")
@@ -42,20 +46,20 @@ public class Brand extends BaseEntity {
     private List<Transaction> transactions;
 
     @Builder
-    public Brand(String name, Integer depositAmount, Long adminId, Boolean isActive) {
+    public Brand(String name, Integer depositAmount, Long adminId, BrandStatus status) {
         this.name = name;
         this.depositAmount = depositAmount;
         this.adminId = adminId;
-        this.isActive = isActive;
+        this.status = status;
     }
 
     //==생성 메서드==//
-    public static Brand create(String name, Integer depositAmount, Long adminId, Boolean isActive) {
+    public static Brand create(String name, Integer depositAmount, Long adminId) {
         return Brand.builder()
             .name(name)
             .depositAmount(depositAmount == null ? 0 : depositAmount)
             .adminId(adminId)
-            .isActive(isActive == null ? Boolean.TRUE : isActive)
+            .status(BrandStatus.INACTIVE)
             .build();
     }
 

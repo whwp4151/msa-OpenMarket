@@ -1,6 +1,7 @@
 package com.example.brandservice.dto;
 
 import com.example.brandservice.domain.Brand;
+import com.example.brandservice.domain.enums.BrandStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class BrandResponseDto {
 
     private Long adminId;
 
-    private Boolean isActive;
+    private BrandStatus status;
 
     public static BrandResponseDto of(Brand brand) {
         return BrandResponseDto.builder()
@@ -30,7 +31,7 @@ public class BrandResponseDto {
             .name(brand.getName())
             .depositAmount(brand.getDepositAmount())
             .adminId(brand.getAdminId())
-            .isActive(brand.getIsActive())
+            .status(brand.getStatus())
             .build();
     }
 

@@ -22,7 +22,7 @@ class BrandServiceTest {
     public void createBrands() throws Exception {
         //given
         String brandName = "브랜드명";
-        Brand brand = Brand.create(brandName, 10000, 1L, TRUE);
+        Brand brand = Brand.create(brandName, 10000, 1L);
 
         //when
         Brand saveBrand = brandsRepository.save(brand);

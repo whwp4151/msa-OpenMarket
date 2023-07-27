@@ -41,7 +41,6 @@ class BrandAdminControllerTest {
             .name("브랜드명")
             .depositAmount(10000)
             .adminId(1L)
-            .isActive(Boolean.TRUE)
             .build();
         String content = new Gson().toJson(brandRequestDto);
 
@@ -57,8 +56,7 @@ class BrandAdminControllerTest {
                 requestFields(
                     fieldWithPath("name").description("브랜드 이름"),
                     fieldWithPath("depositAmount").optional().description("예치금 금액"),
-                    fieldWithPath("adminId").description("브랜드 담당자"),
-                    fieldWithPath("isActive").optional().description("브랜드 활성화 여부")
+                    fieldWithPath("adminId").description("브랜드 담당자")
                 ),
                 responseFields(
                     fieldWithPath("code").description("결과코드"),
@@ -68,7 +66,7 @@ class BrandAdminControllerTest {
                     fieldWithPath("data.name").description("브랜드 이름"),
                     fieldWithPath("data.depositAmount").type(JsonFieldType.NUMBER).description("예치금 금액"),
                     fieldWithPath("data.adminId").description("브랜드 담당자"),
-                    fieldWithPath("data.isActive").type(JsonFieldType.BOOLEAN).description("브랜드 활성화 여부")
+                    fieldWithPath("data.status").description("브랜드 상태")
                 )
             ));
     }

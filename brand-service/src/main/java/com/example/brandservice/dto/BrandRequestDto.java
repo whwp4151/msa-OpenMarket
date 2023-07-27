@@ -23,6 +23,4 @@ public class BrandRequestDto {
     @NotNull(message = "담당자를 입력해주세요.")
     private Long adminId;
 
-    private Boolean isActive;
-
 }

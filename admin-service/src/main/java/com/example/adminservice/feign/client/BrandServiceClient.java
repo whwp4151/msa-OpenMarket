@@ -1,6 +1,8 @@
 package com.example.adminservice.feign.client;
 
 import com.example.adminservice.dto.Result;
+import com.example.adminservice.feign.dto.BrandAccountDto;
+import com.example.adminservice.feign.dto.BrandAccountRequestDto;
 import com.example.adminservice.feign.dto.BrandRequestDto;
 import com.example.adminservice.feign.dto.BrandResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,5 +14,8 @@ public interface BrandServiceClient {
 
     @PostMapping("/admin/brand")
     Result<BrandResponseDto> createBrand(@RequestBody BrandRequestDto brandRequestDto);
+
+    @PostMapping("/admin/brandAccount")
+    Result<BrandAccountDto> createBrandAccount(@RequestBody BrandAccountRequestDto brandAccountRequestDto);
 
 }

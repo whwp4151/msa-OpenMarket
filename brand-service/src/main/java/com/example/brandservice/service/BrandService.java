@@ -30,7 +30,7 @@ public class BrandService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     public BrandResponseDto createBrand(BrandRequestDto brandRequestDto) {
-        Brand brand = Brand.create(brandRequestDto.getName(), brandRequestDto.getDepositAmount(), brandRequestDto.getAdminId(), brandRequestDto.getIsActive());
+        Brand brand = Brand.create(brandRequestDto.getName(), brandRequestDto.getDepositAmount(), brandRequestDto.getAdminId());
         brandsRepository.save(brand);
 
         return BrandResponseDto.of(brand);

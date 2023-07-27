@@ -9,14 +9,19 @@ import com.example.adminservice.feign.client.BrandServiceClient;
 import com.example.adminservice.feign.dto.BrandRequestDto;
 import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.repository.AdminRepository;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class AdminService implements UserDetailsService {
 
     private final AdminRepository adminRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -41,5 +46,22 @@ public class AdminService {
 
     public Result<BrandResponseDto> createBrand(BrandRequestDto brandRequestDto) {
         return brandServiceClient.createBrand(brandRequestDto);
+    }
+
+    public AdminResponseDto getAdmin(String userId) {
+        Admin admin = adminRepository.findByUserId(userId)
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Admin not found"));
+        return AdminResponseDto.of(admin);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Admin admin = adminRepository.findByUserId(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        return new User(admin.getUserId(), admin.getPassword(),
+            true, true, true, true,
+            Collections.emptyList()
+        );
     }
 }

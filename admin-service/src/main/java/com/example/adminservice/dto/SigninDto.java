@@ -1,4 +1,4 @@
-package com.example.userservice.dto;
+package com.example.adminservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

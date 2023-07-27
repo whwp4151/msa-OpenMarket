@@ -55,6 +55,14 @@ spring:
         - id: brand-service
           uri: lb://BRAND-SERVICE
           predicates:
+            - Path=/brand-service/admin/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - AuthorizationHeaderAdminFilter
+            - RewritePath=/brand-service/(?<segment>.*), /$\{segment}
+        - id: brand-service
+          uri: lb://BRAND-SERVICE
+          predicates:
             - Path=/brand-service/**
           filters:
             - RemoveRequestHeader=Cookie
@@ -74,4 +82,5 @@ spring:
             - Path=/admin-service/**
           filters:
             - RemoveRequestHeader=Cookie
+            - AuthorizationHeaderAdminFilter
             - RewritePath=/admin-service/(?<segment>.*), /$\{segment}

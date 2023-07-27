@@ -1,6 +1,6 @@
 package com.example.gatewayservice.filter;
 
-import com.example.gatewayservice.filter.AuthorizationHeaderFilter.Config;
+import com.example.gatewayservice.filter.AuthorizationHeaderAdminFilter.Config;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -17,11 +17,11 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Config> {
+public class AuthorizationHeaderAdminFilter extends AbstractGatewayFilterFactory<Config> {
 
     private final Environment env;
 
-    public AuthorizationHeaderFilter(Environment env) {
+    public AuthorizationHeaderAdminFilter(Environment env) {
         super(Config.class);
         this.env = env;
     }
@@ -52,7 +52,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Conf
         String subject = null;
 
         try {
-            subject = Jwts.parser().setSigningKey(env.getProperty("token.secret"))
+            subject = Jwts.parser().setSigningKey(env.getProperty("admin.secret"))
                 .parseClaimsJws(jwt).getBody()
                 .getSubject();
         } catch (Exception e) {

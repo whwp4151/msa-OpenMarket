@@ -11,6 +11,7 @@ import com.example.brandservice.exception.CustomException;
 import com.example.brandservice.repository.BrandAccountRepository;
 import com.example.brandservice.repository.BrandsRepository;
 import java.util.Collections;
+import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,8 +30,11 @@ public class BrandService implements UserDetailsService {
     private final BrandAccountRepository brandAccountRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public BrandResponseDto createBrand(BrandRequestDto brandRequestDto) {
-        Brand brand = Brand.create(brandRequestDto.getName(), brandRequestDto.getDepositAmount(), brandRequestDto.getAdminId());
+    @Transactional
+    public BrandResponseDto createBrand(BrandRequestDto brandRequestDto, String userId) {
+        BrandAccount brandAccount = this.findBrandAccountByLoginId(userId);
+
+        Brand brand = Brand.create(brandRequestDto.getName(), brandAccount);
         brandsRepository.save(brand);
 
         return BrandResponseDto.of(brand);
@@ -40,12 +44,9 @@ public class BrandService implements UserDetailsService {
     public BrandAccountDto createBrandAccount(BrandAccountRequestDto brandAccountRequestDto) {
         validateDuplicateLoginId(brandAccountRequestDto.getLoginId());
 
-        Brand brand = brandsRepository.findById(brandAccountRequestDto.getBrandId())
-            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found"));
-
         String password = passwordEncoder.encode(brandAccountRequestDto.getPassword());
 
-        BrandAccount brandAccount = BrandAccount.create(brand, brandAccountRequestDto.getLoginId(), password,
+        BrandAccount brandAccount = BrandAccount.create(brandAccountRequestDto.getLoginId(), password,
             new BankInfo(brandAccountRequestDto.getAccountNumber(), brandAccountRequestDto.getBankName(), brandAccountRequestDto.getHolderName()));
 
         brandAccountRepository.save(brandAccount);
@@ -60,10 +61,12 @@ public class BrandService implements UserDetailsService {
     }
 
     public BrandAccountDto getBrandAccount(String loginId) {
-        BrandAccount brandAccount = brandAccountRepository.findByLoginId(loginId)
-            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand Account not found"));
+        return BrandAccountDto.of(findBrandAccountByLoginId(loginId));
+    }
 
-        return BrandAccountDto.of(brandAccount);
+    private BrandAccount findBrandAccountByLoginId(String loginId) {
+        return brandAccountRepository.findByLoginId(loginId)
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand Account not found"));
     }
 
     @Override

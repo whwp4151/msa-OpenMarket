@@ -18,9 +18,4 @@ public class BrandRequestDto {
     @NotBlank(message="이름을 입력해주세요.")
     private String name;
 
-    private Integer depositAmount;
-
-    @NotNull(message = "담당자를 입력해주세요.")
-    private Long adminId;
-
 }

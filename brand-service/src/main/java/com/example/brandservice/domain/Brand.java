@@ -46,28 +46,24 @@ public class Brand extends BaseEntity {
     private List<Transaction> transactions;
 
     @Builder
-    public Brand(String name, Integer depositAmount, Long adminId, BrandStatus status) {
+    public Brand(String name, BrandStatus status, BrandAccount brandAccount) {
         this.name = name;
-        this.depositAmount = depositAmount;
-        this.adminId = adminId;
         this.status = status;
+        this.brandAccount = brandAccount;
+
+        brandAccount.setBrand(this);
     }
 
     //==생성 메서드==//
-    public static Brand create(String name, Integer depositAmount, Long adminId) {
+    public static Brand create(String name, BrandAccount brandAccount) {
         return Brand.builder()
             .name(name)
-            .depositAmount(depositAmount == null ? 0 : depositAmount)
-            .adminId(adminId)
-            .status(BrandStatus.INACTIVE)
+            .status(BrandStatus.PENDING)
+            .brandAccount(brandAccount)
             .build();
     }
 
     //==연관관계 메서드==//
-    public void setBrandAccount(BrandAccount brandAccount) {
-        this.brandAccount = brandAccount;
-    }
-
     public void addTransaction(Transaction transaction) {
         if (transactions == null) transactions = new ArrayList<>();
 

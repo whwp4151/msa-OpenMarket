@@ -56,7 +56,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         AdminResponseDto userDetails = adminService.getAdmin(username);
 
         Claims claims = Jwts.claims().setSubject(username);
-        claims.put("roles", "ROLE_USER");
+        claims.put("roles", "ROLE_ADMIN");
 
         String token = Jwts.builder()
             .setSubject(userDetails.getUserId())

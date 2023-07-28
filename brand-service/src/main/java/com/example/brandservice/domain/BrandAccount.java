@@ -35,22 +35,18 @@ public class BrandAccount extends BaseEntity {
     private BankInfo bankInfo;
 
     @Builder
-    public BrandAccount(Brand brand, String loginId, String password, BankInfo bankInfo) {
-        this.brand = brand;
+    public BrandAccount(String loginId, String password, BankInfo bankInfo) {
         this.loginId = loginId;
         this.password = password;
         this.bankInfo = bankInfo;
     }
 
-    public static BrandAccount create(Brand brand, String loginId, String password, BankInfo bankInfo) {
+    public static BrandAccount create(String loginId, String password, BankInfo bankInfo) {
         BrandAccount brandAccount = BrandAccount.builder()
-            .brand(brand)
             .loginId(loginId)
             .password(password)
             .bankInfo(bankInfo)
             .build();
-
-        brand.setBrandAccount(brandAccount);
 
         return brandAccount;
     }

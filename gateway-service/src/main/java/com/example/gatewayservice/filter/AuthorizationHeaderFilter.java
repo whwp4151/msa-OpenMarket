@@ -1,9 +1,11 @@
 package com.example.gatewayservice.filter;
 
 import com.example.gatewayservice.filter.AuthorizationHeaderFilter.Config;
+import com.example.gatewayservice.jwt.JwtTokenProvider;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.core.env.Environment;
@@ -19,11 +21,13 @@ import reactor.core.publisher.Mono;
 @Component
 public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Config> {
 
-    private final Environment env;
+    private final String secret;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthorizationHeaderFilter(Environment env) {
+    public AuthorizationHeaderFilter(@Value("${token.secret}") String secret, JwtTokenProvider jwtTokenProvider) {
         super(Config.class);
-        this.env = env;
+        this.secret = secret;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Override
@@ -38,32 +42,20 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Conf
             String authorizationHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
             String jwt = authorizationHeader.replace("Bearer", "");
 
-            if (!isJwtValid(jwt)) {
+            if (!jwtTokenProvider.isJwtValid(jwt, secret)) {
                 return onError(exchange, "JWT token is not valid", HttpStatus.UNAUTHORIZED);
             }
 
-            return chain.filter(exchange);
+            String subject = jwtTokenProvider.getUserId(jwt, secret);
+            String role = jwtTokenProvider.getRole(jwt, secret);
+
+            ServerHttpRequest newRequest = request.mutate()
+                .header("user_id", subject)
+                .header("role", role)
+                .build();
+
+            return chain.filter(exchange.mutate().request(newRequest).build());
         };
-    }
-
-    private boolean isJwtValid(String jwt) {
-        boolean returnValue = true;
-
-        String subject = null;
-
-        try {
-            subject = Jwts.parser().setSigningKey(env.getProperty("token.secret"))
-                .parseClaimsJws(jwt).getBody()
-                .getSubject();
-        } catch (Exception e) {
-            returnValue = false;
-        }
-
-        if (StringUtils.isEmpty(subject)) {
-            returnValue = false;
-        }
-
-        return returnValue;
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {

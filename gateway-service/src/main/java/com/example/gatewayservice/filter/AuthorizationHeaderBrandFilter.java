@@ -1,7 +1,9 @@
 package com.example.gatewayservice.filter;
 
-import com.example.gatewayservice.filter.AuthorizationHeaderAdminFilter.Config;
+import com.example.gatewayservice.filter.AuthorizationHeaderBrandFilter.Config;
 import com.example.gatewayservice.jwt.JwtTokenProvider;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -19,12 +21,12 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-public class AuthorizationHeaderAdminFilter extends AbstractGatewayFilterFactory<Config> {
+public class AuthorizationHeaderBrandFilter extends AbstractGatewayFilterFactory<Config> {
 
     private final String secret;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public AuthorizationHeaderAdminFilter(@Value("${admin.secret}") String secret, JwtTokenProvider jwtTokenProvider) {
+    public AuthorizationHeaderBrandFilter(@Value("${brand.secret}") String secret, JwtTokenProvider jwtTokenProvider) {
         super(Config.class);
         this.secret = secret;
         this.jwtTokenProvider = jwtTokenProvider;

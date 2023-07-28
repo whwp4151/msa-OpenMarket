@@ -6,8 +6,6 @@ import com.example.adminservice.dto.AdminResponseDto;
 import com.example.adminservice.dto.Result;
 import com.example.adminservice.exception.CustomException;
 import com.example.adminservice.feign.client.BrandServiceClient;
-import com.example.adminservice.feign.dto.BrandAccountDto;
-import com.example.adminservice.feign.dto.BrandAccountRequestDto;
 import com.example.adminservice.feign.dto.BrandRequestDto;
 import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.repository.AdminRepository;
@@ -46,14 +44,6 @@ public class AdminService implements UserDetailsService {
         }
     }
 
-    public Result<BrandResponseDto> createBrand(BrandRequestDto brandRequestDto) {
-        return brandServiceClient.createBrand(brandRequestDto);
-    }
-
-    public Result<BrandAccountDto> createBrandAccount(BrandAccountRequestDto brandAccountRequestDto) {
-        return brandServiceClient.createBrandAccount(brandAccountRequestDto);
-    }
-
     public AdminResponseDto getAdmin(String userId) {
         Admin admin = adminRepository.findByUserId(userId)
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Admin not found"));
@@ -70,5 +60,7 @@ public class AdminService implements UserDetailsService {
             Collections.emptyList()
         );
     }
+
+
 
 }

@@ -31,7 +31,7 @@ public class WebSecurityConfig {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, adminService, env);
 
         http.csrf().disable();
-        http.authorizeRequests().antMatchers("/health_check").permitAll();
+        http.authorizeRequests().antMatchers("/open/**").permitAll();
         http.authorizeRequests().antMatchers("/error/**").permitAll();
         http.authorizeRequests().antMatchers("/**")
             .hasIpAddress("0.0.0.0/0")

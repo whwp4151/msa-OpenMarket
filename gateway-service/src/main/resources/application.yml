@@ -31,7 +31,7 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/user-service/user/**
+            - Path=/user-service/open/**
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
@@ -55,6 +55,13 @@ spring:
         - id: brand-service
           uri: lb://BRAND-SERVICE
           predicates:
+            - Path=/brand-service/open/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/brand-service/(?<segment>.*), /$\{segment}
+        - id: brand-service
+          uri: lb://BRAND-SERVICE
+          predicates:
             - Path=/brand-service/admin/**
           filters:
             - RemoveRequestHeader=Cookie
@@ -66,6 +73,7 @@ spring:
             - Path=/brand-service/**
           filters:
             - RemoveRequestHeader=Cookie
+            - AuthorizationHeaderBrandFilter
             - RewritePath=/brand-service/(?<segment>.*), /$\{segment}
 
         - id: admin-service
@@ -73,6 +81,13 @@ spring:
           predicates:
             - Path=/admin-service/login
             - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/admin-service/(?<segment>.*), /$\{segment}
+        - id: admin-service
+          uri: lb://ADMIN-SERVICE
+          predicates:
+            - Path=/admin-service/open/**
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/admin-service/(?<segment>.*), /$\{segment}

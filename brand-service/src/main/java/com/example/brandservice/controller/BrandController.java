@@ -1,9 +1,15 @@
 package com.example.brandservice.controller;
 
+import com.example.brandservice.dto.BrandRequestDto;
+import com.example.brandservice.dto.BrandResponseDto;
+import com.example.brandservice.dto.Result;
 import com.example.brandservice.service.BrandService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -11,13 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class BrandController {
 
     private final BrandService brandService;
-    private final Environment env;
 
-    @GetMapping("/health_check")
-    public String status() {
-        return "It's Working in Brand Service"
-            + ", token secret= " + env.getProperty("brand.secret")
-            + ", token expiration time=" + env.getProperty("brand.expiration_time");
+    @PostMapping("/brand/apply")
+    public ResponseEntity<Result> brandApply(@RequestBody @Valid BrandRequestDto brandRequestDto,
+                                             @RequestHeader(value = "user_id") String userId) {
+        BrandResponseDto dto = brandService.createBrand(brandRequestDto, userId);
+        return ResponseEntity.ok(Result.createSuccessResult(dto));
     }
 
 }

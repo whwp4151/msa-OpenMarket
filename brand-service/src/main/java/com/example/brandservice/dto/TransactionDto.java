@@ -4,34 +4,65 @@ import com.example.brandservice.domain.Transaction;
 import com.example.brandservice.domain.enums.TransactionType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Getter
-@ToString
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class TransactionDto {
 
-    private Long transactionId;
+    @Getter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionDepositRequestDto {
 
-    private TransactionType transactionType;
+        private Long adminId;
 
-    private Integer amount;
+        private Long brandId;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime transactionDate;
+        private Integer amount;
 
-    public static TransactionDto of(Transaction transaction) {
-        return TransactionDto.builder()
-            .transactionId(transaction.getId())
-            .transactionType(transaction.getTransactionType())
-            .amount(transaction.getAmount())
-            .build();
+    }
+
+    @Getter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionResponseDto {
+
+        private Long transactionId;
+
+        private TransactionType transactionType;
+
+        private Integer amount;
+
+        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime transactionDate;
+
+        public static TransactionResponseDto of(Transaction transaction) {
+            return TransactionResponseDto.builder()
+                .transactionId(transaction.getId())
+                .transactionType(transaction.getTransactionType())
+                .amount(transaction.getAmount())
+                .build();
+        }
+
+    }
+
+    @Data
+    @Valid
+    public static class DepositDto {
+
+        @NotNull(message = "입금 금액을 입력해주세요.")
+        private Integer amount;
+
     }
 
 }

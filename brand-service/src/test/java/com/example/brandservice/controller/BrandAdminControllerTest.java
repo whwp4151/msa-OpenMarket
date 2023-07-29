@@ -39,8 +39,6 @@ class BrandAdminControllerTest {
         //given
         BrandRequestDto brandRequestDto = BrandRequestDto.builder()
             .name("브랜드명")
-            .depositAmount(10000)
-            .adminId(1L)
             .build();
         String content = new Gson().toJson(brandRequestDto);
 
@@ -78,7 +76,6 @@ class BrandAdminControllerTest {
         BrandAccountRequestDto requestDto = BrandAccountRequestDto.builder()
             .loginId("test")
             .password("1234")
-            .brandId(1L)
             .accountNumber("1122")
             .bankName("은행명")
             .holderName("이체자명")

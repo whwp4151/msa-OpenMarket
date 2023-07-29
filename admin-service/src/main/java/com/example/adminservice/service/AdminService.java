@@ -6,10 +6,12 @@ import com.example.adminservice.dto.AdminResponseDto;
 import com.example.adminservice.dto.Result;
 import com.example.adminservice.exception.CustomException;
 import com.example.adminservice.feign.client.BrandServiceClient;
-import com.example.adminservice.feign.dto.BrandRequestDto;
 import com.example.adminservice.feign.dto.BrandResponseDto;
+import com.example.adminservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
+import com.example.adminservice.feign.dto.TransactionDto.TransactionResponseDto;
 import com.example.adminservice.repository.AdminRepository;
 import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
@@ -45,9 +47,13 @@ public class AdminService implements UserDetailsService {
     }
 
     public AdminResponseDto getAdmin(String userId) {
+        return AdminResponseDto.of(findAdminByUserId(userId));
+    }
+
+    private Admin findAdminByUserId(String userId) {
         Admin admin = adminRepository.findByUserId(userId)
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Admin not found"));
-        return AdminResponseDto.of(admin);
+        return admin;
     }
 
     @Override
@@ -61,6 +67,16 @@ public class AdminService implements UserDetailsService {
         );
     }
 
+    public Result<List<BrandResponseDto>> getBrandApplications() {
+        return brandServiceClient.getBrandApplications();
+    }
 
 
+    public Result<TransactionResponseDto> depositRequest(TransactionDepositRequestDto dto, String userId) {
+        Admin admin = findAdminByUserId(userId);
+
+        dto.setAdminId(admin.getId());
+
+        return brandServiceClient.depositRequest(dto);
+    }
 }

@@ -11,16 +11,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "transactions")
 @Getter
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Transaction extends BaseEntity {
 
     @Id
@@ -29,7 +27,7 @@ public class Transaction extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id")
+    @JoinColumn(name = "brand_id", nullable = false, updatable = false)
     private Brand brand;
 
     @Enumerated(EnumType.STRING)
@@ -38,6 +36,22 @@ public class Transaction extends BaseEntity {
     private Integer amount;
 
     private LocalDateTime transactionDate;
+
+    @Builder
+    public Transaction(Brand brand, Integer amount, TransactionType transactionType) {
+        this.brand = brand;
+        this.amount = amount;
+        this.transactionType = transactionType;
+        this.transactionDate = LocalDateTime.now();
+    }
+
+    public static Transaction create(Brand brand, Integer amount, TransactionType transactionType) {
+        return Transaction.builder()
+            .brand(brand)
+            .amount(amount)
+            .transactionType(transactionType)
+            .build();
+    }
 
     //==연관관계 메서드==//
     public void setBrand(Brand brand) {

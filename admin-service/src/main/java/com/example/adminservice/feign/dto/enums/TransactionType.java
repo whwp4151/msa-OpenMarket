@@ -1,4 +1,4 @@
-package com.example.brandservice.domain.enums;
+package com.example.adminservice.feign.dto.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

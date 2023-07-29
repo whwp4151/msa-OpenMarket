@@ -3,15 +3,23 @@ package com.example.brandservice.service;
 import com.example.brandservice.domain.BankInfo;
 import com.example.brandservice.domain.BrandAccount;
 import com.example.brandservice.domain.Brand;
+import com.example.brandservice.domain.Transaction;
+import com.example.brandservice.domain.enums.BrandStatus;
+import com.example.brandservice.domain.enums.TransactionType;
 import com.example.brandservice.dto.BrandAccountDto;
 import com.example.brandservice.dto.BrandAccountRequestDto;
 import com.example.brandservice.dto.BrandRequestDto;
 import com.example.brandservice.dto.BrandResponseDto;
+import com.example.brandservice.dto.TransactionDto.DepositDto;
+import com.example.brandservice.dto.TransactionDto.TransactionDepositRequestDto;
+import com.example.brandservice.dto.TransactionDto.TransactionResponseDto;
 import com.example.brandservice.exception.CustomException;
 import com.example.brandservice.repository.BrandAccountRepository;
 import com.example.brandservice.repository.BrandsRepository;
+import com.example.brandservice.repository.TransactionRepository;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,6 +36,7 @@ public class BrandService implements UserDetailsService {
 
     private final BrandsRepository brandsRepository;
     private final BrandAccountRepository brandAccountRepository;
+    private final TransactionRepository transactionRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
@@ -69,6 +78,11 @@ public class BrandService implements UserDetailsService {
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand Account not found"));
     }
 
+    private Brand findBrandById(Long id) {
+        return brandsRepository.findById(id)
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found"));
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         BrandAccount brandAccount = brandAccountRepository.findByLoginId(username)
@@ -80,4 +94,45 @@ public class BrandService implements UserDetailsService {
         );
     }
 
+    public List<BrandResponseDto> getBrandApplications() {
+        List<Brand> brands = brandsRepository.findByStatus(BrandStatus.PENDING);
+
+        return brands.stream()
+            .map(BrandResponseDto::of)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public TransactionResponseDto depositRequest(TransactionDepositRequestDto dto) {
+        Brand brand = this.findBrandById(dto.getBrandId());
+        brand.setAdmin(dto.getAdminId());
+
+        Transaction transaction = Transaction.create(brand, dto.getAmount(), TransactionType.REQUEST);
+        transactionRepository.save(transaction);
+
+        return TransactionResponseDto.of(transaction);
+    }
+
+    public BrandAccount findByLoginIdWithBrand(String userId) {
+        return brandAccountRepository.findByLoginIdWithBrand(userId)
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand Account not found"));
+    }
+
+    public List<TransactionResponseDto> getDepositRequest(String userId, Long brandId) {
+        List<Transaction> list = transactionRepository.findByBrand_IdAndTransactionType(brandId, TransactionType.REQUEST);
+
+        return list.stream()
+            .map(TransactionResponseDto::of)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public TransactionResponseDto deposit(DepositDto dto, String userId) {
+        BrandAccount brandAccount = this.findByLoginIdWithBrand(userId);
+
+        Transaction transaction = Transaction.create(brandAccount.getBrand(), dto.getAmount(), TransactionType.DEPOSIT);
+        transactionRepository.save(transaction);
+
+        return TransactionResponseDto.of(transaction);
+    }
 }

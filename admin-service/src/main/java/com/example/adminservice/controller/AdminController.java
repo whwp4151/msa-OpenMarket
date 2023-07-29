@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -27,6 +28,11 @@ public class AdminController {
     public ResponseEntity<Result> depositRequest(@RequestBody @Valid TransactionDto.TransactionDepositRequestDto dto,
                                                  @RequestHeader(value = "user_id") String userId) {
         return ResponseEntity.ok(adminService.depositRequest(dto, userId));
+    }
+
+    @GetMapping("/brand/transactions/{id}")
+    public ResponseEntity<Result> getBrandTransactions(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(adminService.getBrandTransactions(id));
     }
 
 }

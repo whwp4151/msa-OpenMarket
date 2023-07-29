@@ -79,4 +79,8 @@ public class AdminService implements UserDetailsService {
 
         return brandServiceClient.depositRequest(dto);
     }
+
+    public Result<List<TransactionResponseDto>> getBrandTransactions(Long id) {
+        return brandServiceClient.getBrandTransactions(id);
+    }
 }

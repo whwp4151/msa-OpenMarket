@@ -40,9 +40,7 @@ public class BrandService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public BrandResponseDto createBrand(BrandRequestDto brandRequestDto, String userId) {
-        BrandAccount brandAccount = this.findBrandAccountByLoginId(userId);
-
+    public BrandResponseDto createBrand(BrandRequestDto brandRequestDto, String userId, BrandAccount brandAccount) {
         Brand brand = Brand.create(brandRequestDto.getName(), brandAccount);
         brandsRepository.save(brand);
 
@@ -134,5 +132,14 @@ public class BrandService implements UserDetailsService {
         transactionRepository.save(transaction);
 
         return TransactionResponseDto.of(transaction);
+    }
+
+    public List<TransactionResponseDto> getBrandTransactions(Long id) {
+        Brand brand = brandsRepository.findByIdWithTransactions(id)
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found"));
+
+        return brand.getTransactions().stream()
+            .map(TransactionResponseDto::of)
+            .collect(Collectors.toList());
     }
 }

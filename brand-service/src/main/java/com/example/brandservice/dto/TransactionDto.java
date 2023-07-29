@@ -51,6 +51,7 @@ public class TransactionDto {
                 .transactionId(transaction.getId())
                 .transactionType(transaction.getTransactionType())
                 .amount(transaction.getAmount())
+                .transactionDate(transaction.getTransactionDate())
                 .build();
         }
 

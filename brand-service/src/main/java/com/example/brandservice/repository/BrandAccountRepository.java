@@ -14,7 +14,7 @@ public interface BrandAccountRepository extends JpaRepository<BrandAccount, Long
 
     Optional<BrandAccount> findByLoginId(String loginId);
 
-    @Query("SELECT ba FROM BrandAccount ba join fetch ba.brand b WHERE ba.loginId = :loginId")
+    @Query("SELECT ba FROM BrandAccount ba left join fetch ba.brand b WHERE ba.loginId = :loginId")
     Optional<BrandAccount> findByLoginIdWithBrand(@Param("loginId") String loginId);
 
 }

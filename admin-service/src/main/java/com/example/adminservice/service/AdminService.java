@@ -3,13 +3,17 @@ package com.example.adminservice.service;
 import com.example.adminservice.domain.Admin;
 import com.example.adminservice.dto.AdminRequestDto;
 import com.example.adminservice.dto.AdminResponseDto;
+import com.example.adminservice.dto.BrandApprovedDto;
 import com.example.adminservice.dto.Result;
 import com.example.adminservice.exception.CustomException;
 import com.example.adminservice.feign.client.BrandServiceClient;
 import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
 import com.example.adminservice.feign.dto.TransactionDto.TransactionResponseDto;
+import com.example.adminservice.feign.dto.enums.BrandStatus;
+import com.example.adminservice.message.KafkaProducer;
 import com.example.adminservice.repository.AdminRepository;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,7 @@ public class AdminService implements UserDetailsService {
     private final AdminRepository adminRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final BrandServiceClient brandServiceClient;
+    private final KafkaProducer kafkaProducer;
 
     public AdminResponseDto createAdmin(AdminRequestDto dto) {
         validateDuplicateUserId(dto.getUserId());
@@ -82,5 +87,18 @@ public class AdminService implements UserDetailsService {
 
     public Result<List<TransactionResponseDto>> getBrandTransactions(Long id) {
         return brandServiceClient.getBrandTransactions(id);
+    }
+
+
+    public BrandApprovedDto approvedBrand(Long id) {
+        BrandApprovedDto dto = BrandApprovedDto.builder()
+            .brandId(id)
+            .brandStatus(BrandStatus.APPROVED)
+            .approvalDate(LocalDateTime.now())
+            .build();
+
+        kafkaProducer.approvedBrand(dto);
+
+        return dto;
     }
 }

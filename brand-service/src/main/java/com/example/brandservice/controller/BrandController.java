@@ -28,14 +28,7 @@ public class BrandController {
     @PostMapping("/apply")
     public ResponseEntity<Result> brandApply(@RequestBody @Valid BrandRequestDto brandRequestDto,
                                              @RequestHeader(value = "user_id") String userId) {
-        BrandAccount brandAccount = brandService.findByLoginIdWithBrand(userId);
-
-        if (brandAccount.getBrand() != null) {
-            return ResponseEntity.ok(Result.createErrorResult("Brand Already created"));
-        }
-
-        BrandResponseDto dto = brandService.createBrand(brandRequestDto, userId, brandAccount);
-        return ResponseEntity.ok(Result.createSuccessResult(dto));
+        return ResponseEntity.ok(brandService.createBrand(brandRequestDto, userId));
     }
 
     @GetMapping("/deposit-request")

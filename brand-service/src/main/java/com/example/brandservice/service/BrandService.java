@@ -8,8 +8,10 @@ import com.example.brandservice.domain.enums.BrandStatus;
 import com.example.brandservice.domain.enums.TransactionType;
 import com.example.brandservice.dto.BrandAccountDto;
 import com.example.brandservice.dto.BrandAccountRequestDto;
+import com.example.brandservice.dto.BrandApprovedDto;
 import com.example.brandservice.dto.BrandRequestDto;
 import com.example.brandservice.dto.BrandResponseDto;
+import com.example.brandservice.dto.Result;
 import com.example.brandservice.dto.TransactionDto.DepositDto;
 import com.example.brandservice.dto.TransactionDto.TransactionDepositRequestDto;
 import com.example.brandservice.dto.TransactionDto.TransactionResponseDto;
@@ -40,11 +42,17 @@ public class BrandService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public BrandResponseDto createBrand(BrandRequestDto brandRequestDto, String userId, BrandAccount brandAccount) {
+    public Result createBrand(BrandRequestDto brandRequestDto, String userId) {
+        BrandAccount brandAccount = this.findByLoginIdWithBrand(userId);
+
+        if (brandAccount.getBrand() != null) {
+            return Result.createErrorResult("Brand Already created");
+        }
+
         Brand brand = Brand.create(brandRequestDto.getName(), brandAccount);
         brandsRepository.save(brand);
 
-        return BrandResponseDto.of(brand);
+        return Result.createSuccessResult(BrandResponseDto.of(brand));
     }
 
     @Transactional
@@ -141,5 +149,13 @@ public class BrandService implements UserDetailsService {
         return brand.getTransactions().stream()
             .map(TransactionResponseDto::of)
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void approvedBrand(BrandApprovedDto dto) {
+        Brand brand = brandsRepository.findByIdWithTransactions(dto.getBrandId())
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found"));
+
+        brand.approve();
     }
 }

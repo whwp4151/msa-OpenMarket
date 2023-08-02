@@ -67,6 +67,10 @@ public class Brand extends BaseEntity {
         this.adminId = adminId;
     }
 
+    public void approve() {
+        this.status = BrandStatus.APPROVED;
+    }
+
     public void addTransaction(Transaction transaction) {
         if (transactions == null)
             transactions = new ArrayList<>();

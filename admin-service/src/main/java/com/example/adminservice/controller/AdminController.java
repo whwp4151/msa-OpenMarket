@@ -1,5 +1,6 @@
 package com.example.adminservice.controller;
 
+import com.example.adminservice.dto.BrandApprovedDto;
 import com.example.adminservice.dto.Result;
 import com.example.adminservice.feign.dto.TransactionDto;
 import com.example.adminservice.service.AdminService;
@@ -33,6 +34,12 @@ public class AdminController {
     @GetMapping("/brand/transactions/{id}")
     public ResponseEntity<Result> getBrandTransactions(@PathVariable("id") Long id) {
         return ResponseEntity.ok(adminService.getBrandTransactions(id));
+    }
+
+    @PostMapping("/brand/approve/{id}")
+    public ResponseEntity<Result> approvedBrand(@PathVariable("id") Long id) {
+        BrandApprovedDto brandApprovedDto = adminService.approvedBrand(id);
+        return ResponseEntity.ok(Result.createSuccessResult(brandApprovedDto));
     }
 
 }

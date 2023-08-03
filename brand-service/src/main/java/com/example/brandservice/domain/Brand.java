@@ -1,8 +1,6 @@
 package com.example.brandservice.domain;
 
 import com.example.brandservice.domain.enums.BrandStatus;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -42,9 +39,6 @@ public class Brand extends BaseEntity {
     @JoinColumn(name = "brand_account_id")
     private BrandAccount brandAccount;
 
-    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
-
     @Builder
     public Brand(String name, BrandStatus status, BrandAccount brandAccount) {
         this.name = name;
@@ -69,14 +63,6 @@ public class Brand extends BaseEntity {
 
     public void approve() {
         this.status = BrandStatus.APPROVED;
-    }
-
-    public void addTransaction(Transaction transaction) {
-        if (transactions == null)
-            transactions = new ArrayList<>();
-
-        transactions.add(transaction);
-        transaction.setBrand(this);
     }
 
 }

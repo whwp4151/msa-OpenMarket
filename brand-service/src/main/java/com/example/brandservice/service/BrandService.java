@@ -3,22 +3,20 @@ package com.example.brandservice.service;
 import com.example.brandservice.domain.BankInfo;
 import com.example.brandservice.domain.BrandAccount;
 import com.example.brandservice.domain.Brand;
-import com.example.brandservice.domain.Transaction;
 import com.example.brandservice.domain.enums.BrandStatus;
-import com.example.brandservice.domain.enums.TransactionType;
 import com.example.brandservice.dto.BrandAccountDto;
 import com.example.brandservice.dto.BrandAccountRequestDto;
 import com.example.brandservice.dto.BrandApprovedDto;
 import com.example.brandservice.dto.BrandRequestDto;
 import com.example.brandservice.dto.BrandResponseDto;
 import com.example.brandservice.dto.Result;
-import com.example.brandservice.dto.TransactionDto.DepositDto;
-import com.example.brandservice.dto.TransactionDto.TransactionDepositRequestDto;
-import com.example.brandservice.dto.TransactionDto.TransactionResponseDto;
+import com.example.brandservice.feign.client.TransactionServiceClient;
+import com.example.brandservice.feign.dto.TransactionDto.DepositDto;
+import com.example.brandservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
+import com.example.brandservice.feign.dto.TransactionDto.TransactionResponseDto;
 import com.example.brandservice.exception.CustomException;
 import com.example.brandservice.repository.BrandAccountRepository;
 import com.example.brandservice.repository.BrandsRepository;
-import com.example.brandservice.repository.TransactionRepository;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,8 +36,8 @@ public class BrandService implements UserDetailsService {
 
     private final BrandsRepository brandsRepository;
     private final BrandAccountRepository brandAccountRepository;
-    private final TransactionRepository transactionRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final TransactionServiceClient transactionServiceClient;
 
     @Transactional
     public Result createBrand(BrandRequestDto brandRequestDto, String userId) {
@@ -113,10 +111,17 @@ public class BrandService implements UserDetailsService {
         Brand brand = this.findBrandById(dto.getBrandId());
         brand.setAdmin(dto.getAdminId());
 
-        Transaction transaction = Transaction.create(brand, dto.getAmount(), TransactionType.REQUEST);
-        transactionRepository.save(transaction);
+        // todo. kafka
+//        {
+//            "status": "success",
+//            "message": "예치금이 성공적으로 입금되었습니다.",
+//            "depositAmount": 100000,
+//            "transactionId": "abc123xyz"
+//        }
+//        Transaction transaction = Transaction.create(brand, dto.getAmount(), TransactionType.REQUEST);
+//        transactionRepository.save(transaction);
 
-        return TransactionResponseDto.of(transaction);
+        return new TransactionResponseDto();
     }
 
     public BrandAccount findByLoginIdWithBrand(String userId) {
@@ -124,36 +129,30 @@ public class BrandService implements UserDetailsService {
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand Account not found"));
     }
 
-    public List<TransactionResponseDto> getDepositRequest(String userId, Long brandId) {
-        List<Transaction> list = transactionRepository.findByBrand_IdAndTransactionType(brandId, TransactionType.REQUEST);
-
-        return list.stream()
-            .map(TransactionResponseDto::of)
-            .collect(Collectors.toList());
+    public Result<List<TransactionResponseDto>> getDepositRequest(Long brandId) {
+        return transactionServiceClient.getDepositRequest(brandId);
     }
 
     @Transactional
     public TransactionResponseDto deposit(DepositDto dto, String userId) {
         BrandAccount brandAccount = this.findByLoginIdWithBrand(userId);
 
-        Transaction transaction = Transaction.create(brandAccount.getBrand(), dto.getAmount(), TransactionType.DEPOSIT);
-        transactionRepository.save(transaction);
+        // todo. kafka
+//        {
+//            "status": "success",
+//            "message": "예치금이 성공적으로 입금되었습니다.",
+//            "depositAmount": 100000,
+//            "transactionId": "abc123xyz"
+//        }
+//        Transaction transaction = Transaction.create(brandAccount.getBrand(), dto.getAmount(), TransactionType.DEPOSIT);
+//        transactionRepository.save(transaction);
 
-        return TransactionResponseDto.of(transaction);
-    }
-
-    public List<TransactionResponseDto> getBrandTransactions(Long id) {
-        Brand brand = brandsRepository.findByIdWithTransactions(id)
-            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found"));
-
-        return brand.getTransactions().stream()
-            .map(TransactionResponseDto::of)
-            .collect(Collectors.toList());
+        return new TransactionResponseDto();
     }
 
     @Transactional
     public void approvedBrand(BrandApprovedDto dto) {
-        Brand brand = brandsRepository.findByIdWithTransactions(dto.getBrandId())
+        Brand brand = brandsRepository.findById(dto.getBrandId())
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Brand not found"));
 
         brand.approve();

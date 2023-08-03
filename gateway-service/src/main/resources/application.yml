@@ -99,3 +99,11 @@ spring:
             - RemoveRequestHeader=Cookie
             - AuthorizationHeaderAdminFilter
             - RewritePath=/admin-service/(?<segment>.*), /$\{segment}
+
+        - id: transaction-service
+          uri: lb://TRANSACTION-SERVICE
+          predicates:
+            - Path=/transaction-service/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/transaction-service/(?<segment>.*), /$\{segment}

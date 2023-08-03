@@ -7,6 +7,7 @@ import com.example.adminservice.dto.BrandApprovedDto;
 import com.example.adminservice.dto.Result;
 import com.example.adminservice.exception.CustomException;
 import com.example.adminservice.feign.client.BrandServiceClient;
+import com.example.adminservice.feign.client.TransactionServiceClient;
 import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
 import com.example.adminservice.feign.dto.TransactionDto.TransactionResponseDto;
@@ -32,6 +33,7 @@ public class AdminService implements UserDetailsService {
     private final AdminRepository adminRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final BrandServiceClient brandServiceClient;
+    private final TransactionServiceClient transactionServiceClient;
     private final KafkaProducer kafkaProducer;
 
     public AdminResponseDto createAdmin(AdminRequestDto dto) {
@@ -86,7 +88,7 @@ public class AdminService implements UserDetailsService {
     }
 
     public Result<List<TransactionResponseDto>> getBrandTransactions(Long id) {
-        return brandServiceClient.getBrandTransactions(id);
+        return transactionServiceClient.getTransactions(id);
     }
 
 

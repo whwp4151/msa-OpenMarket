@@ -2,10 +2,9 @@ package com.example.brandservice.controller;
 
 import com.example.brandservice.domain.BrandAccount;
 import com.example.brandservice.dto.BrandRequestDto;
-import com.example.brandservice.dto.BrandResponseDto;
 import com.example.brandservice.dto.Result;
-import com.example.brandservice.dto.TransactionDto.DepositDto;
-import com.example.brandservice.dto.TransactionDto.TransactionResponseDto;
+import com.example.brandservice.feign.dto.TransactionDto.DepositDto;
+import com.example.brandservice.feign.dto.TransactionDto.TransactionResponseDto;
 import com.example.brandservice.service.BrandService;
 import java.util.List;
 import javax.validation.Valid;
@@ -25,12 +24,18 @@ public class BrandController {
 
     private final BrandService brandService;
 
+    /*
+    * 브랜드 입점 요청
+    * */
     @PostMapping("/apply")
     public ResponseEntity<Result> brandApply(@RequestBody @Valid BrandRequestDto brandRequestDto,
                                              @RequestHeader(value = "user_id") String userId) {
         return ResponseEntity.ok(brandService.createBrand(brandRequestDto, userId));
     }
 
+    /*
+    * 브랜드 예치금 요청 내역 조회
+    * */
     @GetMapping("/deposit-request")
     public ResponseEntity<Result> getDepositRequest(@RequestHeader(value = "user_id") String userId) {
         BrandAccount brandAccount = brandService.findByLoginIdWithBrand(userId);
@@ -39,10 +44,12 @@ public class BrandController {
             return ResponseEntity.ok(Result.createErrorResult("Brand Not Found"));
         }
 
-        List<TransactionResponseDto> result = brandService.getDepositRequest(userId, brandAccount.getBrand().getId());
-        return ResponseEntity.ok(Result.createSuccessResult(result));
+        return ResponseEntity.ok(brandService.getDepositRequest(brandAccount.getBrand().getId()));
     }
 
+    /*
+    * 브랜드 예치금 입금
+    * */
     @PostMapping("/deposit")
     public ResponseEntity<Result> deposit(@RequestBody @Valid DepositDto dto,
                                           @RequestHeader(value = "user_id") String userId) {

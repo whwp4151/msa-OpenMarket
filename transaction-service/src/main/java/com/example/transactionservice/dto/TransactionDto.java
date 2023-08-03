@@ -1,7 +1,7 @@
-package com.example.brandservice.dto;
+package com.example.transactionservice.dto;
 
-import com.example.brandservice.domain.Transaction;
-import com.example.brandservice.domain.enums.TransactionType;
+import com.example.transactionservice.domain.Transaction;
+import com.example.transactionservice.domain.enums.TransactionType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
@@ -39,6 +39,8 @@ public class TransactionDto {
 
         private Long transactionId;
 
+        private Long brandId;
+
         private TransactionType transactionType;
 
         private Integer amount;
@@ -49,6 +51,7 @@ public class TransactionDto {
         public static TransactionResponseDto of(Transaction transaction) {
             return TransactionResponseDto.builder()
                 .transactionId(transaction.getId())
+                .brandId(transaction.getBrandId())
                 .transactionType(transaction.getTransactionType())
                 .amount(transaction.getAmount())
                 .transactionDate(transaction.getTransactionDate())

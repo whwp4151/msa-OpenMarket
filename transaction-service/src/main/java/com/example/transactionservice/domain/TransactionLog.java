@@ -1,61 +1,54 @@
-package com.example.brandservice.domain;
+package com.example.transactionservice.domain;
 
-import com.example.brandservice.domain.enums.TransactionType;
+import com.example.transactionservice.domain.enums.TransactionType;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "transactions")
+@Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Transaction extends BaseEntity {
+public class TransactionLog extends BaseEntity {
 
     @Id
     @GeneratedValue
-    @Column(name = "transaction_id")
+    @Column(name = "transaction_log_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "brand_id", nullable = false, updatable = false)
-    private Brand brand;
+    @Column(nullable = false, updatable = false)
+    private Long brandId;
 
     @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
 
     private Integer amount;
 
+    private Integer previousAmount;
+
     private LocalDateTime transactionDate;
 
     @Builder
-    public Transaction(Brand brand, Integer amount, TransactionType transactionType) {
-        this.brand = brand;
+    public TransactionLog(Long brandId, Integer amount, TransactionType transactionType) {
+        this.brandId = brandId;
         this.amount = amount;
         this.transactionType = transactionType;
         this.transactionDate = LocalDateTime.now();
     }
 
-    public static Transaction create(Brand brand, Integer amount, TransactionType transactionType) {
-        return Transaction.builder()
-            .brand(brand)
+    public static TransactionLog create(Long brandId, Integer amount, TransactionType transactionType) {
+        return TransactionLog.builder()
+            .brandId(brandId)
             .amount(amount)
             .transactionType(transactionType)
             .build();
-    }
-
-    //==연관관계 메서드==//
-    public void setBrand(Brand brand) {
-        this.brand = brand;
     }
 
 }

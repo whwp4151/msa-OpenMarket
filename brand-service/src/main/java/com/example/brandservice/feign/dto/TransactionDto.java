@@ -7,7 +7,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -49,12 +48,53 @@ public class TransactionDto {
 
     }
 
-    @Data
+    @Getter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Valid
     public static class DepositDto {
 
         @NotNull(message = "입금 금액을 입력해주세요.")
         private Integer amount;
+
+        @NotNull(message = "요청 받은 ID를 입력해주세요.")
+        private Long transactionId;
+
+    }
+
+    @Getter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionCreateDto {
+
+        private Long transactionId;
+
+        private Long brandId;
+
+        private Integer amount;
+
+        private Integer previousAmount;
+
+        private TransactionType transactionType;
+
+    }
+
+    @Getter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionResult {
+
+        private Long brandId;
+
+        private Integer depositAmount;
+
+        private TransactionType transactionType;
 
     }
 

@@ -49,4 +49,8 @@ public class Transaction extends BaseEntity {
             .build();
     }
 
+    public void updateTransactionType(TransactionType transactionType) {
+        this.transactionType = transactionType;
+    }
+
 }

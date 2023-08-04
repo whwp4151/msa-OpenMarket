@@ -11,6 +11,7 @@ import com.example.adminservice.feign.client.TransactionServiceClient;
 import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
 import com.example.adminservice.feign.dto.TransactionDto.TransactionResponseDto;
+import com.example.adminservice.feign.dto.TransactionDto.TransactionResult;
 import com.example.adminservice.feign.dto.enums.BrandStatus;
 import com.example.adminservice.message.KafkaProducer;
 import com.example.adminservice.repository.AdminRepository;
@@ -79,7 +80,7 @@ public class AdminService implements UserDetailsService {
     }
 
 
-    public Result<TransactionResponseDto> depositRequest(TransactionDepositRequestDto dto, String userId) {
+    public Result<TransactionResult> depositRequest(TransactionDepositRequestDto dto, String userId) {
         Admin admin = findAdminByUserId(userId);
 
         dto.setAdminId(admin.getId());

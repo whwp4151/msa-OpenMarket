@@ -5,11 +5,21 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 public class TransactionDto {
 
-    @Data
+    @Getter
+    @Setter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Valid
     public static class TransactionDepositRequestDto {
 
@@ -23,7 +33,11 @@ public class TransactionDto {
 
     }
 
-    @Data
+    @Getter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class TransactionResponseDto {
 
         private Long transactionId;
@@ -36,6 +50,21 @@ public class TransactionDto {
 
         @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
         private LocalDateTime transactionDate;
+
+    }
+
+    @Getter
+    @ToString
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionResult {
+
+        private Long brandId;
+
+        private Integer depositAmount;
+
+        private TransactionType transactionType;
 
     }
 

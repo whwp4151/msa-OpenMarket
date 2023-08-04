@@ -12,9 +12,13 @@ import com.example.brandservice.dto.BrandResponseDto;
 import com.example.brandservice.dto.Result;
 import com.example.brandservice.feign.client.TransactionServiceClient;
 import com.example.brandservice.feign.dto.TransactionDto.DepositDto;
+import com.example.brandservice.feign.dto.TransactionDto.TransactionCreateDto;
 import com.example.brandservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
 import com.example.brandservice.feign.dto.TransactionDto.TransactionResponseDto;
 import com.example.brandservice.exception.CustomException;
+import com.example.brandservice.feign.dto.TransactionDto.TransactionResult;
+import com.example.brandservice.feign.dto.enums.TransactionType;
+import com.example.brandservice.message.KafkaProducer;
 import com.example.brandservice.repository.BrandAccountRepository;
 import com.example.brandservice.repository.BrandsRepository;
 import java.util.Collections;
@@ -38,6 +42,7 @@ public class BrandService implements UserDetailsService {
     private final BrandAccountRepository brandAccountRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TransactionServiceClient transactionServiceClient;
+    private final KafkaProducer kafkaProducer;
 
     @Transactional
     public Result createBrand(BrandRequestDto brandRequestDto, String userId) {
@@ -107,21 +112,22 @@ public class BrandService implements UserDetailsService {
     }
 
     @Transactional
-    public TransactionResponseDto depositRequest(TransactionDepositRequestDto dto) {
+    public TransactionResult depositRequest(TransactionDepositRequestDto dto) {
         Brand brand = this.findBrandById(dto.getBrandId());
         brand.setAdmin(dto.getAdminId());
 
-        // todo. kafka
-//        {
-//            "status": "success",
-//            "message": "예치금이 성공적으로 입금되었습니다.",
-//            "depositAmount": 100000,
-//            "transactionId": "abc123xyz"
-//        }
-//        Transaction transaction = Transaction.create(brand, dto.getAmount(), TransactionType.REQUEST);
-//        transactionRepository.save(transaction);
+        TransactionCreateDto transactionCreateDto = TransactionCreateDto.builder()
+            .brandId(brand.getId())
+            .amount(dto.getAmount())
+            .transactionType(TransactionType.REQUEST)
+            .build();
+        kafkaProducer.createTransaction(transactionCreateDto);
 
-        return new TransactionResponseDto();
+        return TransactionResult.builder()
+            .brandId(brand.getId())
+            .depositAmount(dto.getAmount())
+            .transactionType(TransactionType.REQUEST)
+            .build();
     }
 
     public BrandAccount findByLoginIdWithBrand(String userId) {
@@ -134,20 +140,32 @@ public class BrandService implements UserDetailsService {
     }
 
     @Transactional
-    public TransactionResponseDto deposit(DepositDto dto, String userId) {
+    public Result deposit(DepositDto dto, String userId) {
         BrandAccount brandAccount = this.findByLoginIdWithBrand(userId);
 
-        // todo. kafka
-//        {
-//            "status": "success",
-//            "message": "예치금이 성공적으로 입금되었습니다.",
-//            "depositAmount": 100000,
-//            "transactionId": "abc123xyz"
-//        }
-//        Transaction transaction = Transaction.create(brandAccount.getBrand(), dto.getAmount(), TransactionType.DEPOSIT);
-//        transactionRepository.save(transaction);
+        if (brandAccount.getBrand() == null) {
+            return Result.createErrorResult("Brand Not Found");
+        }
 
-        return new TransactionResponseDto();
+        Brand brand = brandAccount.getBrand();
+        Integer previousAmount = brand.getDepositAmount();
+        brand.deposit(dto.getAmount());
+
+        TransactionCreateDto transactionCreateDto = TransactionCreateDto.builder()
+            .transactionId(dto.getTransactionId())
+            .brandId(brand.getId())
+            .amount(dto.getAmount())
+            .previousAmount(previousAmount)
+            .transactionType(TransactionType.DEPOSIT)
+            .build();
+        kafkaProducer.createTransaction(transactionCreateDto);
+
+        TransactionResult result = TransactionResult.builder()
+            .brandId(brand.getId())
+            .depositAmount(dto.getAmount())
+            .transactionType(TransactionType.DEPOSIT)
+            .build();
+        return Result.createSuccessResult(result);
     }
 
     @Transactional

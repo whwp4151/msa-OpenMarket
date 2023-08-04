@@ -3,7 +3,7 @@ package com.example.adminservice.feign.client;
 import com.example.adminservice.dto.Result;
 import com.example.adminservice.feign.dto.BrandResponseDto;
 import com.example.adminservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
-import com.example.adminservice.feign.dto.TransactionDto.TransactionResponseDto;
+import com.example.adminservice.feign.dto.TransactionDto.TransactionResult;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +17,6 @@ public interface BrandServiceClient {
     Result<List<BrandResponseDto>> getBrandApplications();
 
     @PostMapping("/admin/brand/deposit-request")
-    Result<TransactionResponseDto> depositRequest(@RequestBody TransactionDepositRequestDto dto);
+    Result<TransactionResult> depositRequest(@RequestBody TransactionDepositRequestDto dto);
 
 }

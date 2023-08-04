@@ -53,8 +53,7 @@ public class BrandController {
     @PostMapping("/deposit")
     public ResponseEntity<Result> deposit(@RequestBody @Valid DepositDto dto,
                                           @RequestHeader(value = "user_id") String userId) {
-        TransactionResponseDto result = brandService.deposit(dto, userId);
-        return ResponseEntity.ok(Result.createSuccessResult(result));
+        return ResponseEntity.ok(brandService.deposit(dto, userId));
     }
 
 }

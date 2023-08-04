@@ -43,6 +43,7 @@ public class Brand extends BaseEntity {
     public Brand(String name, BrandStatus status, BrandAccount brandAccount) {
         this.name = name;
         this.status = status;
+        this.depositAmount = 0;
         this.brandAccount = brandAccount;
 
         brandAccount.setBrand(this);
@@ -63,6 +64,12 @@ public class Brand extends BaseEntity {
 
     public void approve() {
         this.status = BrandStatus.APPROVED;
+    }
+
+    public void deposit(Integer amount) {
+        if (this.depositAmount == null) this.depositAmount = 0;
+
+        this.depositAmount += amount;
     }
 
 }

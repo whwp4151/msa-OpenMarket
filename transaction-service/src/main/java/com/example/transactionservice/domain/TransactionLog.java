@@ -36,17 +36,19 @@ public class TransactionLog extends BaseEntity {
     private LocalDateTime transactionDate;
 
     @Builder
-    public TransactionLog(Long brandId, Integer amount, TransactionType transactionType) {
+    public TransactionLog(Long brandId, Integer amount, Integer previousAmount, TransactionType transactionType) {
         this.brandId = brandId;
         this.amount = amount;
+        this.previousAmount = previousAmount;
         this.transactionType = transactionType;
         this.transactionDate = LocalDateTime.now();
     }
 
-    public static TransactionLog create(Long brandId, Integer amount, TransactionType transactionType) {
+    public static TransactionLog create(Long brandId, Integer amount, Integer previousAmount, TransactionType transactionType) {
         return TransactionLog.builder()
             .brandId(brandId)
             .amount(amount)
+            .previousAmount(previousAmount)
             .transactionType(transactionType)
             .build();
     }

@@ -107,3 +107,11 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/transaction-service/(?<segment>.*), /$\{segment}
+
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/product-service/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/product-service/(?<segment>.*), /$\{segment}

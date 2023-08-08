@@ -41,8 +41,12 @@ spring:
             - Path=/user-service/**
           filters:
             - RemoveRequestHeader=Cookie
-            - AuthorizationHeaderFilter
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - name: AuthorizationHeaderFilter
+              args:
+                hasUserRole: true
+                hasBrandRole: false
+                hasAdminRole: false
 
         - id: brand-service
           uri: lb://BRAND-SERVICE
@@ -65,16 +69,24 @@ spring:
             - Path=/brand-service/admin/**
           filters:
             - RemoveRequestHeader=Cookie
-            - AuthorizationHeaderAdminFilter
             - RewritePath=/brand-service/(?<segment>.*), /$\{segment}
+            - name: AuthorizationHeaderFilter
+              args:
+                hasUserRole: false
+                hasBrandRole: false
+                hasAdminRole: true
         - id: brand-service
           uri: lb://BRAND-SERVICE
           predicates:
             - Path=/brand-service/**
           filters:
             - RemoveRequestHeader=Cookie
-            - AuthorizationHeaderBrandFilter
             - RewritePath=/brand-service/(?<segment>.*), /$\{segment}
+            - name: AuthorizationHeaderFilter
+              args:
+                hasUserRole: false
+                hasBrandRole: true
+                hasAdminRole: false
 
         - id: admin-service
           uri: lb://ADMIN-SERVICE
@@ -97,8 +109,12 @@ spring:
             - Path=/admin-service/**
           filters:
             - RemoveRequestHeader=Cookie
-            - AuthorizationHeaderAdminFilter
             - RewritePath=/admin-service/(?<segment>.*), /$\{segment}
+            - name: AuthorizationHeaderFilter
+              args:
+                hasUserRole: false
+                hasBrandRole: false
+                hasAdminRole: true
 
         - id: transaction-service
           uri: lb://TRANSACTION-SERVICE

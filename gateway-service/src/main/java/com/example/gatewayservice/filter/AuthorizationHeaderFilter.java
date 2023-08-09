@@ -2,7 +2,7 @@ package com.example.gatewayservice.filter;
 
 import com.example.gatewayservice.filter.AuthorizationHeaderFilter.Config;
 import com.example.gatewayservice.jwt.JwtTokenProvider;
-import lombok.Getter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -81,7 +81,7 @@ public class AuthorizationHeaderFilter extends AbstractGatewayFilterFactory<Conf
         return response.setComplete();
     }
 
-    @Getter
+    @Data
     public static class Config {
         private boolean hasUserRole;
         private boolean hasBrandRole;

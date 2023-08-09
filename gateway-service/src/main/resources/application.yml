@@ -119,11 +119,30 @@ spring:
         - id: transaction-service
           uri: lb://TRANSACTION-SERVICE
           predicates:
+            - Path=/transaction-service/open/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/transaction-service/(?<segment>.*), /$\{segment}
+        - id: transaction-service
+          uri: lb://TRANSACTION-SERVICE
+          predicates:
             - Path=/transaction-service/**
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/transaction-service/(?<segment>.*), /$\{segment}
+            - name: AuthorizationHeaderFilter
+              args:
+                hasUserRole: false
+                hasBrandRole: true
+                hasAdminRole: true
 
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/product-service/open/**
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/product-service/(?<segment>.*), /$\{segment}
         - id: product-service
           uri: lb://PRODUCT-SERVICE
           predicates:
@@ -131,3 +150,8 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/product-service/(?<segment>.*), /$\{segment}
+            - name: AuthorizationHeaderFilter
+              args:
+                hasUserRole: false
+                hasBrandRole: true
+                hasAdminRole: true

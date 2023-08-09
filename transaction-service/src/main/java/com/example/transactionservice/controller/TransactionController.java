@@ -18,11 +18,6 @@ public class TransactionController {
 
     private final TransactionService transactionService;
 
-    @GetMapping("/health_check")
-    public String status() {
-        return "It's Working in Transaction Service";
-    }
-
     /*
      * 브랜드 예치금 거래 내역 조회
      * */

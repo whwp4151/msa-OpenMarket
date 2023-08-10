@@ -10,7 +10,10 @@ import com.example.brandservice.dto.BrandApprovedDto;
 import com.example.brandservice.dto.BrandRequestDto;
 import com.example.brandservice.dto.BrandResponseDto;
 import com.example.brandservice.dto.Result;
+import com.example.brandservice.feign.client.ProductServiceClient;
 import com.example.brandservice.feign.client.TransactionServiceClient;
+import com.example.brandservice.feign.dto.ProductDto.CreateProductDto;
+import com.example.brandservice.feign.dto.ProductDto.ProductResponseDto;
 import com.example.brandservice.feign.dto.TransactionDto.DepositDto;
 import com.example.brandservice.feign.dto.TransactionDto.TransactionCreateDto;
 import com.example.brandservice.feign.dto.TransactionDto.TransactionDepositRequestDto;
@@ -43,6 +46,7 @@ public class BrandService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final TransactionServiceClient transactionServiceClient;
     private final KafkaProducer kafkaProducer;
+    private final ProductServiceClient productServiceClient;
 
     @Transactional
     public Result createBrand(BrandRequestDto brandRequestDto, String userId) {
@@ -175,4 +179,18 @@ public class BrandService implements UserDetailsService {
 
         brand.approve();
     }
+
+    public Result createProduct(CreateProductDto dto, String userId) {
+        BrandAccount brandAccount = this.findByLoginIdWithBrand(userId);
+
+        if (brandAccount.getBrand() == null) {
+            return Result.createErrorResult("Brand Not Found");
+        }
+
+        Brand brand = brandAccount.getBrand();
+        dto.setBrandId(brand.getId());
+
+        return productServiceClient.createProduct(dto);
+    }
+
 }

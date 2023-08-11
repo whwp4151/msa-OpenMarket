@@ -38,4 +38,10 @@ public class ProductController {
         return ResponseEntity.ok(Result.createSuccessResult(responseDto));
     }
 
+    @GetMapping("/product/{id}")
+    public ResponseEntity<Result> getProduct(@PathVariable("id") Long id) {
+        List<ProductResponseDto> list = productService.getProduct(id);
+        return ResponseEntity.ok(Result.createSuccessResult(list));
+    }
+
 }

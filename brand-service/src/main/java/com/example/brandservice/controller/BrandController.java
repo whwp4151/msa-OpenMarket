@@ -3,11 +3,8 @@ package com.example.brandservice.controller;
 import com.example.brandservice.domain.BrandAccount;
 import com.example.brandservice.dto.BrandRequestDto;
 import com.example.brandservice.dto.Result;
-import com.example.brandservice.feign.dto.ProductDto.CreateProductDto;
 import com.example.brandservice.feign.dto.TransactionDto.DepositDto;
-import com.example.brandservice.feign.dto.TransactionDto.TransactionResponseDto;
 import com.example.brandservice.service.BrandService;
-import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -55,12 +52,6 @@ public class BrandController {
     public ResponseEntity<Result> deposit(@RequestBody @Valid DepositDto dto,
                                           @RequestHeader(value = "user_id") String userId) {
         return ResponseEntity.ok(brandService.deposit(dto, userId));
-    }
-
-    @PostMapping("/product")
-    public ResponseEntity<Result> createProduct(@RequestBody @Valid CreateProductDto dto,
-                                                @RequestHeader(value = "user_id") String userId) {
-        return ResponseEntity.ok(brandService.createProduct(dto, userId));
     }
 
 }

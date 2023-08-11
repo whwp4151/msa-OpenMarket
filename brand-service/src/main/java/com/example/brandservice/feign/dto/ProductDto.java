@@ -3,7 +3,6 @@ package com.example.brandservice.feign.dto;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Data;
 
 public class ProductDto {
@@ -29,7 +28,6 @@ public class ProductDto {
     }
 
     @Data
-    @Builder
     public static class ProductResponseDto {
 
         private Long productId;

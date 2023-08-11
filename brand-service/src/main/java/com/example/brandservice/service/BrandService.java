@@ -180,17 +180,15 @@ public class BrandService implements UserDetailsService {
         brand.approve();
     }
 
-    public Result createProduct(CreateProductDto dto, String userId) {
-        BrandAccount brandAccount = this.findByLoginIdWithBrand(userId);
-
-        if (brandAccount.getBrand() == null) {
-            return Result.createErrorResult("Brand Not Found");
-        }
-
+    public Result createProduct(CreateProductDto dto, BrandAccount brandAccount) {
         Brand brand = brandAccount.getBrand();
         dto.setBrandId(brand.getId());
 
         return productServiceClient.createProduct(dto);
+    }
+
+    public Result getProduct(BrandAccount brandAccount) {
+        return productServiceClient.getProduct(brandAccount.getBrand().getId());
     }
 
 }

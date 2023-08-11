@@ -41,10 +41,20 @@ public class ProductService {
         Category category = categoryRepository.findById(dto.getCategoryId())
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Category not found"));
 
+        if (category.getParentCategory() == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Cannot create a product under a top-level category");
+        }
+
         Product product = Product.create(dto.getName(), dto.getPrice(), dto.getStockQuantity(), dto.getBrandId(), category);
         productRepository.save(product);
 
         return ProductResponseDto.of(product);
+    }
+
+    public List<ProductResponseDto> getProduct(Long brandId) {
+        return productRepository.findByBrandId(brandId).stream()
+            .map(ProductResponseDto::of)
+            .collect(Collectors.toList());
     }
 
 }

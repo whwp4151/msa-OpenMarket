@@ -22,9 +22,7 @@ import lombok.NoArgsConstructor;
 public class Category extends BaseEntity {
 
     @Id
-    @GeneratedValue
-    @Column(name = "category_id")
-    private Long id;
+    private String categoryId;
 
     private String name;
 
@@ -36,18 +34,21 @@ public class Category extends BaseEntity {
     private List<Category> subCategories = new ArrayList<>();
 
     @Builder
-    public Category(String name) {
+    public Category(String categoryId, String name) {
+        this.categoryId = categoryId;
         this.name = name;
     }
 
-    public static Category createParentCategory(String name) {
+    public static Category createParentCategory(String categoryId, String name) {
         return Category.builder()
+            .categoryId(categoryId)
             .name(name)
             .build();
     }
 
-    public static Category createSubCategory(String name, Category parentCategory) {
+    public static Category createSubCategory(String categoryId, String name, Category parentCategory) {
         Category subCategory = Category.builder()
+            .categoryId(categoryId)
             .name(name)
             .build();
 

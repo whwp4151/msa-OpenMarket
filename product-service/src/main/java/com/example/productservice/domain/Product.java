@@ -1,6 +1,8 @@
 package com.example.productservice.domain;
 
 import com.example.productservice.exception.CustomException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,19 +31,19 @@ public class Product extends BaseEntity {
 
     private Integer price;
 
-    private Integer stockQuantity;
-
     private Long brandId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @OneToMany(mappedBy = "product")
+    private List<ProductOption> productOptions = new ArrayList<>();
+
     @Builder
-    public Product(String name, Integer price, Integer stockQuantity, Long brandId, Category category) {
+    public Product(String name, Integer price, Long brandId, Category category) {
         this.name = name;
         this.price = price;
-        this.stockQuantity = stockQuantity;
         this.brandId = brandId;
         this.category = category;
     }
@@ -49,22 +52,9 @@ public class Product extends BaseEntity {
         return Product.builder()
             .name(name)
             .price(price)
-            .stockQuantity(stockQuantity)
             .brandId(brandId)
             .category(category)
             .build();
-    }
-
-    public void addStock(int quantity) {
-        this.stockQuantity += quantity;
-    }
-
-    public void removeStock(int quantity) {
-        int restStock = this.stockQuantity - quantity;
-        if (restStock < 0) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "need more stock");
-        }
-        this.stockQuantity = restStock;
     }
 
 }

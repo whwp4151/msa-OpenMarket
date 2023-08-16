@@ -30,7 +30,7 @@ public class ProductService {
             .collect(Collectors.toList());
     }
 
-    public List<ParentCategoryDto> getCategories(Long id) {
+    public List<ParentCategoryDto> getCategories(String id) {
         return categoryCustomRepository.getCategories(id).stream()
             .map(ParentCategoryDto::of)
             .collect(Collectors.toList());

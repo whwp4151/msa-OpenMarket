@@ -12,7 +12,7 @@ public class CategoryDto {
     @Builder
     public static class ParentCategoryDto {
 
-        private Long categoryId;
+        private String categoryId;
 
         private String name;
 
@@ -20,7 +20,7 @@ public class CategoryDto {
 
         public static ParentCategoryDto of(Category category) {
             return ParentCategoryDto.builder()
-                .categoryId(category.getId())
+                .categoryId(category.getCategoryId())
                 .name(category.getName())
                 .subCategories(category.getSubCategories().stream()
                     .map(SubCategoryDto::of)
@@ -34,13 +34,13 @@ public class CategoryDto {
     @Builder
     public static class SubCategoryDto {
 
-        private Long categoryId;
+        private String categoryId;
 
         private String name;
 
         public static SubCategoryDto of(Category category) {
             return SubCategoryDto.builder()
-                .categoryId(category.getId())
+                .categoryId(category.getCategoryId())
                 .name(category.getName())
                 .build();
         }

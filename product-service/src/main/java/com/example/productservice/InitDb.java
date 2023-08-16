@@ -19,7 +19,6 @@ public class InitDb {
         initService.dbInit1();
         initService.dbInit2();
         initService.dbInit3();
-        initService.dbInit4();
     }
 
     @Component
@@ -30,39 +29,30 @@ public class InitDb {
         private final EntityManager em;
 
         public void dbInit1() {
-            Category top = Category.createParentCategory("상의");
-            Category shortSleeve = Category.createSubCategory("반소매 티셔츠", top);
-            Category longSleeve = Category.createSubCategory("긴소매 티셔츠", top);
-            Category knit = Category.createSubCategory("니트", top);
+            Category diaryPlanner = Category.createParentCategory("1000", "다이어리/플래너");
+            Category diary = Category.createSubCategory("1001", "다이어리", diaryPlanner);
+            Category organizer = Category.createSubCategory("1002", "오거나이저", diaryPlanner);
+            Category planner = Category.createSubCategory("1003", "플래너", diaryPlanner);
 
-            em.persist(top);
+            em.persist(diaryPlanner);
         }
 
         public void dbInit2() {
-            Category outer = Category.createParentCategory("아우터");
-            Category jacket = Category.createSubCategory("자켓", outer);
-            Category coat = Category.createSubCategory("코트", outer);
-            Category padding = Category.createSubCategory("패딩", outer);
+            Category notePaper = Category.createParentCategory("2000", "노트/메모지");
+            Category paper = Category.createSubCategory("2001", "메모지", notePaper);
+            Category wordBook = Category.createSubCategory("2002", "단어장", notePaper);
+            Category note = Category.createSubCategory("2003", "수첩", notePaper);
 
-            em.persist(outer);
+            em.persist(notePaper);
         }
 
         public void dbInit3() {
-            Category pants = Category.createParentCategory("바지");
-            Category denim = Category.createSubCategory("데님 팬츠", pants);
-            Category cotton = Category.createSubCategory("코튼 팬츠", pants);
-            Category slacks = Category.createSubCategory("슬랙스", pants);
+            Category decoration = Category.createParentCategory("3000", "데코레이션");
+            Category stamp = Category.createSubCategory("3001", "스탬프", decoration);
+            Category sticker = Category.createSubCategory("3002", "스티커", decoration);
+            Category tape = Category.createSubCategory("3003", "테이프", decoration);
 
-            em.persist(pants);
-        }
-
-        public void dbInit4() {
-            Category shoes = Category.createParentCategory("신발");
-            Category sneakers = Category.createSubCategory("스니커즈", shoes);
-            Category dressShoes = Category.createSubCategory("구두", shoes);
-            Category slipper = Category.createSubCategory("슬리퍼", shoes);
-
-            em.persist(shoes);
+            em.persist(decoration);
         }
 
     }

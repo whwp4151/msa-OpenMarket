@@ -27,7 +27,7 @@ public class ProductController {
     }
 
     @GetMapping("/categories/{id}")
-    public ResponseEntity<Result> getCategories(@PathVariable("id") Long id) {
+    public ResponseEntity<Result> getCategories(@PathVariable("id") String id) {
         List<ParentCategoryDto> categories = productService.getCategories(id);
         return ResponseEntity.ok(Result.createSuccessResult(categories));
     }

@@ -14,7 +14,7 @@ public class CategoryCustomRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public List<Category> getCategories(Long id) {
+    public List<Category> getCategories(String id) {
         QCategory parent = new QCategory("parent");
         QCategory sub = new QCategory("sub");
 
@@ -29,9 +29,9 @@ public class CategoryCustomRepository {
             .fetch();
     }
 
-    private BooleanExpression idEq(QCategory category, Long id) {
+    private BooleanExpression idEq(QCategory category, String  id) {
         if (id == null) return null;
-        return category.id.eq(id);
+        return category.categoryId.eq(id);
     }
 
 }

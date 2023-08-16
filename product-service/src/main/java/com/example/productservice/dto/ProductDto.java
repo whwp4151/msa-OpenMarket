@@ -18,7 +18,7 @@ public class ProductDto {
 
         private Long brandId;
 
-        private Long categoryId;
+        private String categoryId;
 
     }
 
@@ -32,20 +32,17 @@ public class ProductDto {
 
         private Integer price;
 
-        private Integer stockQuantity;
-
         private Long brandId;
 
-        private Long categoryId;
+        private String categoryId;
 
         public static ProductResponseDto of(Product product) {
             return ProductResponseDto.builder()
                 .productId(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
-                .stockQuantity(product.getStockQuantity())
                 .brandId(product.getBrandId())
-                .categoryId(product.getCategory().getId())
+                .categoryId(product.getCategory().getCategoryId())
                 .build();
         }
 

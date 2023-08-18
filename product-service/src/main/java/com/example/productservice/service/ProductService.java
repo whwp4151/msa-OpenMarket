@@ -2,14 +2,18 @@ package com.example.productservice.service;
 
 import com.example.productservice.domain.Category;
 import com.example.productservice.domain.Product;
+import com.example.productservice.domain.ProductLog;
 import com.example.productservice.domain.ProductOption;
 import com.example.productservice.dto.CategoryDto.ParentCategoryDto;
 import com.example.productservice.dto.ProductDto.CreateProductDto;
 import com.example.productservice.dto.ProductDto.ProductOptionDto;
 import com.example.productservice.dto.ProductDto.ProductResponseDto;
+import com.example.productservice.dto.ProductDto.UpdateProductDto;
 import com.example.productservice.exception.CustomException;
 import com.example.productservice.repository.CategoryCustomRepository;
 import com.example.productservice.repository.CategoryRepository;
+import com.example.productservice.repository.ProductCustomRepository;
+import com.example.productservice.repository.ProductLogRepository;
 import com.example.productservice.repository.ProductRepository;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +30,8 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
     private final CategoryCustomRepository categoryCustomRepository;
     private final ProductRepository productRepository;
+    private final ProductLogRepository productLogRepository;
+    private final ProductCustomRepository productCustomRepository;
 
     public List<ParentCategoryDto> getCategories() {
         return categoryCustomRepository.getCategories(null).stream()
@@ -59,6 +65,8 @@ public class ProductService {
 
         productRepository.save(product);
 
+        this.saveProductLog(product);
+
         return ProductResponseDto.of(product);
     }
 
@@ -66,6 +74,32 @@ public class ProductService {
         return productRepository.findByBrandId(brandId).stream()
             .map(ProductResponseDto::of)
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ProductResponseDto updateProduct(UpdateProductDto dto) {
+        Category category = categoryRepository.findById(dto.getCategoryId())
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        if (category.getParentCategory() == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Cannot create a product under a top-level category");
+        }
+
+        Product product = productCustomRepository.findByIdWithProductOption(dto.getProductId());
+        if (product == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Product not found");
+        }
+
+        product.updateProductInfo(dto.getName(), dto.getPrice(), dto.getConsumerPrice(), dto.getDiscountedPrice(), dto.getIsSold(), dto.getTotalStockQuantity(), category, dto.getProductOptions());
+
+        this.saveProductLog(product);
+
+        return ProductResponseDto.of(product);
+    }
+
+    private void saveProductLog(Product product) {
+        ProductLog productLog = ProductLog.fromProduct(product);
+        productLogRepository.save(productLog);
     }
 
 }

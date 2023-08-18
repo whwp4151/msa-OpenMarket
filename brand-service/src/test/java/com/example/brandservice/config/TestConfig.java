@@ -11,7 +11,7 @@ public class TestConfig {
 
     @Bean
     public RestDocsMockMvcConfigurationCustomizer restDocsMockMvcConfigurationCustomizer() {
-        return configurer -> configurer.operationPreprocessors()
+        return configure -> configure.operationPreprocessors()
             .withRequestDefaults(prettyPrint())
             .withResponseDefaults(prettyPrint());
     }

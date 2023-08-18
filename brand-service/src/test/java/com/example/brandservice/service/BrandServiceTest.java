@@ -1,7 +1,5 @@
 package com.example.brandservice.service;
 
-import static java.lang.Boolean.TRUE;
-
 import com.example.brandservice.domain.Brand;
 import com.example.brandservice.repository.BrandsRepository;
 import org.junit.jupiter.api.DisplayName;

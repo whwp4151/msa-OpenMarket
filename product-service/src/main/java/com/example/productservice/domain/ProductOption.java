@@ -1,8 +1,6 @@
 package com.example.productservice.domain;
 
 import com.example.productservice.exception.CustomException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -55,6 +52,12 @@ public class ProductOption {
             .addPrice(addPrice)
             .stockQuantity(stockQuantity)
             .build();
+    }
+
+    public void updateOptionInfo(String name, Integer addPrice, Integer stockQuantity) {
+        this.name = name;
+        this.addPrice = addPrice;
+        this.stockQuantity = stockQuantity;
     }
 
     public void setProduct(Product product) {

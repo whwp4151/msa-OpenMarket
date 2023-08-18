@@ -1,25 +1,35 @@
 package com.example.productservice.domain;
 
+import com.example.productservice.dto.ProductDto.UpdateProductOptionDto;
 import com.example.productservice.exception.CustomException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+    @Index(name = "idx_product_brand_id", columnList = "brandId")
+})
+@DynamicUpdate
 public class Product extends BaseEntity {
 
     @Id
@@ -37,17 +47,18 @@ public class Product extends BaseEntity {
 
     private Boolean isSold; // 판매 여부
 
-    private Boolean isDeleted; // 삭제 여부
-
     private Long brandId;
 
     private Integer totalStockQuantity;
+
+    // Versioning
+    private Integer version = 1;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductOption> productOptions = new ArrayList<>();
 
     @Builder
@@ -57,7 +68,6 @@ public class Product extends BaseEntity {
         this.consumerPrice = consumerPrice;
         this.discountedPrice = discountedPrice;
         this.isSold = isSold == null ? Boolean.FALSE : isSold;
-        this.isDeleted = Boolean.FALSE;
         this.brandId = brandId;
         this.totalStockQuantity = totalStockQuantity;
         this.category = category;
@@ -76,13 +86,42 @@ public class Product extends BaseEntity {
             .build();
     }
 
+    public void updateProductInfo(String name, Integer price, Integer consumerPrice, Integer discountedPrice, Boolean isSold, Integer totalStockQuantity, Category category, List<UpdateProductOptionDto> productOptions) {
+        this.name = name;
+        this.price = price;
+        this.consumerPrice = consumerPrice;
+        this.discountedPrice = discountedPrice;
+        this.isSold = isSold;
+        this.totalStockQuantity = totalStockQuantity;
+        this.category = category;
+        this.version++;
+
+        if (!CollectionUtils.isEmpty(productOptions)) {
+            for (UpdateProductOptionDto optionDto : productOptions) {
+                ProductOption option;
+
+                if (optionDto.getProductOptionId() != null) {
+                    option = findOptionById(optionDto.getProductOptionId());
+                    option.updateOptionInfo(optionDto.getName(), optionDto.getAddPrice(), optionDto.getStockQuantity());
+                } else {
+                    option = ProductOption.create(optionDto.getName(), optionDto.getAddPrice(), optionDto.getStockQuantity());
+                }
+
+                this.addProductOption(option);
+            }
+        }
+    }
+
     public void addProductOption(ProductOption productOption) {
         this.productOptions.add(productOption);
         productOption.setProduct(this);
     }
 
-    public void deleteProduct() {
-        this.isDeleted = Boolean.TRUE;
+    private ProductOption findOptionById(Long optionId) {
+        return productOptions.stream()
+            .filter(option -> option.getId().equals(optionId))
+            .findFirst()
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Product option not found"));
     }
 
     public void addStock(int quantity) {

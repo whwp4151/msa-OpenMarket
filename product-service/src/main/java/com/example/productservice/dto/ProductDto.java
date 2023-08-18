@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import org.springframework.util.CollectionUtils;
 
 public class ProductDto {
 
-    @Getter
+    @Data
     public static class CreateProductDto {
 
         private String name;
@@ -97,6 +96,43 @@ public class ProductDto {
                         .collect(Collectors.toList()))
                 .build();
         }
+
+    }
+
+    @Data
+    public static class UpdateProductDto {
+
+        private Long productId;
+
+        private String name;
+
+        private Integer price;
+
+        private Integer consumerPrice; // 소비자가
+
+        private Integer discountedPrice; // 할인 가격
+
+        private Boolean isSold; // 판매 여부
+
+        private Integer totalStockQuantity;
+
+        private String categoryId;
+
+        // 상품 옵션
+        private List<UpdateProductOptionDto> productOptions;
+
+    }
+
+    @Data
+    public static class UpdateProductOptionDto {
+
+        private Long productOptionId;
+
+        private String name;
+
+        private Integer addPrice;
+
+        private Integer stockQuantity;
 
     }
 

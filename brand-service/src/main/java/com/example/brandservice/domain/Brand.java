@@ -72,4 +72,8 @@ public class Brand extends BaseEntity {
         this.depositAmount += amount;
     }
 
+    public boolean isApproved() {
+        return BrandStatus.APPROVED.equals(this.status);
+    }
+
 }

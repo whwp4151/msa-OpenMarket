@@ -182,9 +182,16 @@ public class BrandService implements UserDetailsService {
 
     public Result createProduct(CreateProductDto dto, BrandAccount brandAccount) {
         Brand brand = brandAccount.getBrand();
-        dto.setBrandId(brand.getId());
+        validateBrandApprovalForProductRegistration(brand, dto.getIsSold());
 
+        dto.setBrandId(brand.getId());
         return productServiceClient.createProduct(dto);
+    }
+
+    private void validateBrandApprovalForProductRegistration(Brand brand, Boolean isSold) {
+        if (!brand.isApproved() && isSold != null && isSold) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "Only approved brands are allowed to register products.");
+        }
     }
 
     public Result getProduct(BrandAccount brandAccount) {

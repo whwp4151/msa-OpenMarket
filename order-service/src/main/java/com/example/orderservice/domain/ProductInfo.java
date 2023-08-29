@@ -22,4 +22,6 @@ public class ProductInfo {
 
     private Integer productPrice;
 
+    private Integer productVersion;
+
 }

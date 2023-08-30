@@ -1,7 +1,8 @@
 package com.example.orderservice.domain;
 
-import com.example.orderservice.domain.enums.PaymentStatus;
+import com.example.orderservice.domain.enums.DeliveryStatus;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -17,31 +18,31 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Payment extends BaseEntity {
+public class Delivery {
 
     @Id
     @GeneratedValue
-    @Column(name = "payment_id")
+    @Column(name = "delivery_id")
     private Long id;
 
-    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "delivery", fetch = FetchType.LAZY)
     private Order order;
 
-    private Integer amount;
-
     @Enumerated(EnumType.STRING)
-    private PaymentStatus status;
+    private DeliveryStatus status;
 
-    public Payment(Integer amount, PaymentStatus status) {
-        this.amount = amount;
-        this.status = status;
-    }
+    @Embedded
+    private Address address;
 
     @Builder
-    public static Payment create(Integer amount, PaymentStatus status) {
-        return Payment.builder()
-            .amount(amount)
-            .status(status)
+    public Delivery(Address address) {
+        this.address = address;
+        this.status = DeliveryStatus.DELIVERY_PREPARING;
+    }
+
+    public static Delivery create(Address address) {
+        return Delivery.builder()
+            .address(address)
             .build();
     }
 

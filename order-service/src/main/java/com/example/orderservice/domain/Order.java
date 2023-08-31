@@ -56,24 +56,27 @@ public class Order extends BaseEntity {
     private Integer totalPrice;
 
     @Builder
-    public Order(Long userId) {
+    public Order(Long userId, Integer deliveryFee, Integer totalPrice) {
         this.userId = userId;
-        this.status = OrderStatus.ORDER_RECEIVED;
+        this.deliveryFee = deliveryFee;
+        this.totalPrice = totalPrice;
     }
 
-    public static Order create(Long userId, Delivery delivery, Payment payment) {
+    public static Order create(Long userId, Delivery delivery, Integer deliveryFee) {
         Order order = Order.builder()
             .userId(userId)
+            .deliveryFee(deliveryFee)
             .build();
 
         order.setDelivery(delivery);
-        order.setPayment(payment);
         return order;
     }
 
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
+
+        this.totalPrice = orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
     }
 
     public void setPayment(Payment payment) {

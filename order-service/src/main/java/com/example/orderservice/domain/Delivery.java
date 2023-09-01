@@ -37,7 +37,6 @@ public class Delivery {
     @Builder
     public Delivery(Address address) {
         this.address = address;
-        this.status = DeliveryStatus.DELIVERY_PREPARING;
     }
 
     public static Delivery create(Address address) {
@@ -48,6 +47,11 @@ public class Delivery {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    // 배송준비중
+    public void preparingDelivery() {
+        this.status = DeliveryStatus.DELIVERY_PREPARING;
     }
 
 }

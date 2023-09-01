@@ -1,6 +1,8 @@
 package com.example.orderservice.domain;
 
+import com.example.orderservice.domain.enums.DeliveryStatus;
 import com.example.orderservice.domain.enums.OrderStatus;
+import com.example.orderservice.domain.enums.PaymentStatus;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -60,6 +62,7 @@ public class Order extends BaseEntity {
         this.userId = userId;
         this.deliveryFee = deliveryFee;
         this.totalPrice = totalPrice;
+        this.status = OrderStatus.ORDER_RECEIVED;
     }
 
     public static Order create(Long userId, Delivery delivery, Integer deliveryFee) {
@@ -87,6 +90,52 @@ public class Order extends BaseEntity {
     public void setDelivery(Delivery delivery) {
         this.delivery = delivery;
         delivery.setOrder(this);
+    }
+
+    public String getOrderRepresentativeStatus() {
+        if (this.delivery == null || this.payment == null) {
+            return this.status.getDescription();
+        }
+
+        // 주문취소
+        if (this.status == OrderStatus.ORDER_CANCELLED) {
+            return this.status.getDescription();
+        }
+
+        OrderStatus orderStatus = this.status;
+        PaymentStatus paymentStatus = this.payment.getStatus();
+        DeliveryStatus deliveryStatus = this.delivery.getStatus();
+
+        // 결제완료
+        if (paymentStatus == PaymentStatus.PAYMENT_COMPLETED) {
+            if (orderStatus == OrderStatus.ORDER_RECEIVED) {
+                return paymentStatus.getDescription();
+            }
+
+            if (deliveryStatus == null) {
+                return orderStatus.getDescription();
+            }
+
+            // 배송완료
+            if (deliveryStatus == DeliveryStatus.DELIVERY_COMPLETED) {
+                if (orderStatus == OrderStatus.ITEM_PREPARING) {
+                    return deliveryStatus.getDescription();
+                }
+
+                // 구매확정, 교환, 환불
+                return orderStatus.getDescription();
+            }
+
+            return deliveryStatus.getDescription();
+        }
+
+        // 결제취소, 결제실패
+        return paymentStatus.getDescription();
+    }
+
+    // 결제확인
+    public void confirmPayment() {
+        this.status = OrderStatus.ITEM_PREPARING;
     }
 
 }

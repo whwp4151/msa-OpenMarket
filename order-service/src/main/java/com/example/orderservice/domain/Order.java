@@ -79,6 +79,10 @@ public class Order extends BaseEntity {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
 
+        recalculateTotalPrice();
+    }
+
+    private void recalculateTotalPrice() {
         this.totalPrice = orderItems.stream().mapToInt(OrderItem::getTotalPrice).sum();
     }
 
@@ -136,6 +140,11 @@ public class Order extends BaseEntity {
     // 결제확인
     public void confirmPayment() {
         this.status = OrderStatus.ITEM_PREPARING;
+    }
+
+    // 배송준비중
+    public void preparingDelivery() {
+        this.delivery.preparingDelivery();
     }
 
 }

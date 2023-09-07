@@ -51,6 +51,12 @@ public class OrderDto {
                 .quantity(orderItem.getQuantity())
                 .build();
         }
+
+        public ProductInfo toProductInfo() {
+            return new ProductInfo(this.productId, this.productName,
+                this.productOptionId, this.productOptionName, this.productPrice,
+                this.productVersion);
+        }
     }
 
     @Data
@@ -82,7 +88,7 @@ public class OrderDto {
                 .orderId(order.getId())
                 .userId(order.getUserId())
                 .orderStatus(order.getOrderRepresentativeStatus())
-                .paymentAmount(order.getPayment().getAmount())
+                .paymentAmount(order.getPayment() == null ? null : order.getPayment().getAmount())
                 .deliveryFee(order.getDeliveryFee())
                 .totalPrice(order.getTotalPrice())
                 .city(address.getCity())

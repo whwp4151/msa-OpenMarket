@@ -32,12 +32,12 @@ public class Payment extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Builder
     public Payment(Integer amount, PaymentStatus status) {
         this.amount = amount;
         this.status = status;
     }
 
-    @Builder
     public static Payment create(Integer amount, PaymentStatus status) {
         return Payment.builder()
             .amount(amount)

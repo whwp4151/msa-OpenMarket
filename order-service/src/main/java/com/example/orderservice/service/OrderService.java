@@ -6,6 +6,7 @@ import com.example.orderservice.domain.Order;
 import com.example.orderservice.domain.OrderItem;
 import com.example.orderservice.domain.Payment;
 import com.example.orderservice.domain.ProductInfo;
+import com.example.orderservice.domain.enums.OrderStatus;
 import com.example.orderservice.domain.enums.PaymentStatus;
 import com.example.orderservice.dto.OrderDto.OrderItemDto;
 import com.example.orderservice.dto.OrderDto.OrderRequestDto;
@@ -33,9 +34,7 @@ public class OrderService {
         Order order = Order.create(dto.getUserId(), delivery, dto.getDeliveryFee());
 
         for (OrderItemDto item : dto.getOrderItems()) {
-            OrderItem orderItem = OrderItem.create(new ProductInfo(item.getProductId(), item.getProductName(),
-                item.getProductOptionId(), item.getProductOptionName(), item.getProductPrice(),
-                item.getProductVersion()), item.getOrderPrice(), item.getQuantity());
+            OrderItem orderItem = OrderItem.create(item.toProductInfo(), item.getOrderPrice(), item.getQuantity());
             order.addOrderItem(orderItem);
         }
 
@@ -54,7 +53,7 @@ public class OrderService {
         return OrderResponseDto.of(order);
     }
 
-    // todo. 배치처리
+    // 배치 or api 처리
     @Transactional
     public OrderResponseDto confirmPayment(Long orderId) {
         Order order = orderCustomRepository.findOrderByIdWithItems(orderId);
@@ -64,6 +63,18 @@ public class OrderService {
         }
 
         order.confirmPayment();
+        return OrderResponseDto.of(order);
+    }
+
+    @Transactional
+    public OrderResponseDto preparingDelivery(Long orderId) {
+        Order order = orderCustomRepository.findOrderByIdWithItems(orderId);
+
+        if (OrderStatus.ITEM_PREPARING != order.getStatus()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Order must be item preparing");
+        }
+
+        order.preparingDelivery();
         return OrderResponseDto.of(order);
     }
 

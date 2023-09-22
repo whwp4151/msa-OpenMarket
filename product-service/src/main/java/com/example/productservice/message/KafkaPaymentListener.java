@@ -1,6 +1,7 @@
 package com.example.productservice.message;
 
 import com.example.productservice.message.dto.OrderDto.PaymentCompleteDto;
+import com.example.productservice.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +19,16 @@ public class KafkaPaymentListener implements AcknowledgingMessageListener<String
 
     private final ObjectMapper mapper;
 
+    private final ProductService productService;
+
     @Override
     @KafkaListener(topics = PAYMENT_COMPLETE_TOPIC, groupId = KafkaConsumerConfig.PAYMENTS_CONSUMER_GROUP)
     public void onMessage(ConsumerRecord<String, String> data, Acknowledgment acknowledgment) {
         log.info("kafkaMessage :: {}", data.value());
         try {
             PaymentCompleteDto dto = mapper.readValue(data.value(), PaymentCompleteDto.class);
-            // todo. 재고관리
+
+            productService.updateStock(dto);
 
             // 예외가 발생하지 않는다면, 수동커밋을 진행하여 읽은 메세지는 처리됐음을 보장한다.!
             acknowledgment.acknowledge();

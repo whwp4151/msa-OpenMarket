@@ -6,6 +6,8 @@ import com.example.orderservice.domain.OrderItem;
 import com.example.orderservice.domain.ProductInfo;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,12 +16,23 @@ import lombok.NoArgsConstructor;
 public class OrderDto {
 
     @Data
+    @Valid
     public static class OrderRequestDto {
         private Long userId;
+
+        @NotNull
         private Integer deliveryFee;
+
+        @NotNull
         private String city;
+
+        @NotNull
         private String street;
+
+        @NotNull
         private String zipcode;
+
+        @NotNull
         private List<OrderItemDto> orderItems;
     }
 

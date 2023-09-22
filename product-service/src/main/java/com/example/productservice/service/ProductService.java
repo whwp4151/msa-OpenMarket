@@ -10,6 +10,7 @@ import com.example.productservice.dto.ProductDto.ProductOptionDto;
 import com.example.productservice.dto.ProductDto.ProductResponseDto;
 import com.example.productservice.dto.ProductDto.UpdateProductDto;
 import com.example.productservice.exception.CustomException;
+import com.example.productservice.message.dto.OrderDto.PaymentCompleteDto;
 import com.example.productservice.repository.CategoryCustomRepository;
 import com.example.productservice.repository.CategoryRepository;
 import com.example.productservice.repository.ProductCustomRepository;
@@ -100,6 +101,11 @@ public class ProductService {
     private void saveProductLog(Product product) {
         ProductLog productLog = ProductLog.fromProduct(product);
         productLogRepository.save(productLog);
+    }
+
+    @Transactional
+    public void updateStock(PaymentCompleteDto dto) {
+        System.out.println("재고관리");
     }
 
 }

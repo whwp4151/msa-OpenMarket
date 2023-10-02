@@ -1,5 +1,6 @@
 package com.example.productservice.service;
 
+import com.example.productservice.annotation.DistributedLock;
 import com.example.productservice.domain.Category;
 import com.example.productservice.domain.Product;
 import com.example.productservice.domain.ProductLog;
@@ -17,7 +18,10 @@ import com.example.productservice.repository.ProductCustomRepository;
 import com.example.productservice.repository.ProductLogRepository;
 import com.example.productservice.repository.ProductRepository;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -77,6 +81,11 @@ public class ProductService {
             .collect(Collectors.toList());
     }
 
+    public Product getProductEntity(Long productId) {
+        return productRepository.findById(productId)
+            .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Product not found"));
+    }
+
     @Transactional
     public ProductResponseDto updateProduct(UpdateProductDto dto) {
         Category category = categoryRepository.findById(dto.getCategoryId())
@@ -106,6 +115,20 @@ public class ProductService {
     @Transactional
     public void updateStock(PaymentCompleteDto dto) {
         System.out.println("재고관리");
+    }
+
+    @DistributedLock(key = "stock_lock", waitTime = 3000, leaseTime = 3000, timeUnit = TimeUnit.MILLISECONDS)
+    public boolean checkStock(Long productId, int orderQuantity) {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+
+        if (optionalProduct.isEmpty()) return false;
+
+        Product product = optionalProduct.get();
+        if (product.getTotalStockQuantity() < orderQuantity) return false;
+
+        product.removeStock(orderQuantity);
+        productRepository.save(product);
+        return true;
     }
 
 }

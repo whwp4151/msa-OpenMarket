@@ -1,6 +1,5 @@
 package com.example.productservice.service;
 
-import com.example.productservice.annotation.DistributedLock;
 import com.example.productservice.domain.Category;
 import com.example.productservice.domain.Product;
 import com.example.productservice.domain.ProductLog;
@@ -10,7 +9,11 @@ import com.example.productservice.dto.ProductDto.CreateProductDto;
 import com.example.productservice.dto.ProductDto.ProductOptionDto;
 import com.example.productservice.dto.ProductDto.ProductResponseDto;
 import com.example.productservice.dto.ProductDto.UpdateProductDto;
+import com.example.productservice.dto.Result;
+import com.example.productservice.dto.Result.Code;
 import com.example.productservice.exception.CustomException;
+import com.example.productservice.feign.client.OrderServiceClient;
+import com.example.productservice.message.dto.OrderDto.OrderResponseDto;
 import com.example.productservice.message.dto.OrderDto.PaymentCompleteDto;
 import com.example.productservice.repository.CategoryCustomRepository;
 import com.example.productservice.repository.CategoryRepository;
@@ -18,12 +21,10 @@ import com.example.productservice.repository.ProductCustomRepository;
 import com.example.productservice.repository.ProductLogRepository;
 import com.example.productservice.repository.ProductRepository;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +38,8 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductLogRepository productLogRepository;
     private final ProductCustomRepository productCustomRepository;
+    private final OrderServiceClient orderServiceClient;
+    private final StockUpdater stockUpdater;
 
     public List<ParentCategoryDto> getCategories() {
         return categoryCustomRepository.getCategories(null).stream()
@@ -114,21 +117,16 @@ public class ProductService {
 
     @Transactional
     public void updateStock(PaymentCompleteDto dto) {
-        System.out.println("재고관리");
+        OrderResponseDto order = getOrder(dto.getOrderId());
+        stockUpdater.updateProductStock(order.getOrderItems());
     }
 
-    @DistributedLock(key = "stock_lock", waitTime = 3000, leaseTime = 3000, timeUnit = TimeUnit.MILLISECONDS)
-    public boolean checkStock(Long productId, int orderQuantity) {
-        Optional<Product> optionalProduct = productRepository.findById(productId);
-
-        if (optionalProduct.isEmpty()) return false;
-
-        Product product = optionalProduct.get();
-        if (product.getTotalStockQuantity() < orderQuantity) return false;
-
-        product.removeStock(orderQuantity);
-        productRepository.save(product);
-        return true;
+    private OrderResponseDto getOrder(Long orderId) {
+        Result<OrderResponseDto> orderResult = orderServiceClient.getOrder(orderId);
+        if (Code.ERROR == orderResult.getCode()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Order Not found.");
+        }
+        return orderResult.getData();
     }
 
 }

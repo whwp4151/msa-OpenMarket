@@ -8,12 +8,13 @@ import com.example.productservice.dto.ProductDto.ProductOptionDto;
 import com.example.productservice.dto.ProductDto.ProductResponseDto;
 import com.example.productservice.dto.ProductDto.UpdateProductDto;
 import com.example.productservice.dto.ProductDto.UpdateProductOptionDto;
+import com.example.productservice.message.dto.OrderDto.OrderItemDto;
+import com.example.productservice.message.dto.OrderDto.PaymentCompleteDto;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.transaction.Transactional;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -30,6 +31,9 @@ class ProductServiceTest {
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private StockUpdater stockUpdater;
 
     @Test
     @Order(1)
@@ -71,63 +75,67 @@ class ProductServiceTest {
         assertEquals(dto.getName(), product.getName());
     }
 
-//    @Test
-//    @Order(2)
-//    @Rollback(value = false)
-//    public void updateProductUpdateOption() throws Exception {
-//        //given
-//        UpdateProductDto dto = createUpdateProductDto();
-//        UpdateProductOptionDto optionDto1 = new UpdateProductOptionDto();
-//        optionDto1.setProductOptionId(2L);
-//        optionDto1.setName("그리드2");
-//        optionDto1.setAddPrice(30000);
-//        optionDto1.setStockQuantity(1002);
-//
-//        dto.setProductOptions(List.of(optionDto1));
-//
-//        //when
-//        ProductResponseDto product = productService.updateProduct(dto);
-//
-//        //then
-//        assertEquals(dto.getName(), product.getName());
-//    }
-//
-//    @Test
-//    @Order(3)
-//    @Rollback(value = false)
-//    public void updateProductInsertOption() throws Exception {
-//        //given
-//        UpdateProductDto dto = createUpdateProductDto();
-//        UpdateProductOptionDto optionDto1 = new UpdateProductOptionDto();
-//        optionDto1.setName("그리드3");
-//        optionDto1.setAddPrice(40000);
-//        optionDto1.setStockQuantity(1004);
-//
-//        dto.setProductOptions(List.of(optionDto1));
-//
-//        //when
-//        ProductResponseDto product = productService.updateProduct(dto);
-//
-//        //then
-//        assertEquals(dto.getName(), product.getName());
-//    }
+    @Test
+    @Order(2)
+    @Rollback(value = false)
+    public void updateProductUpdateOption() throws Exception {
+        //given
+        UpdateProductDto dto = createUpdateProductDto();
+        UpdateProductOptionDto optionDto1 = new UpdateProductOptionDto();
+        optionDto1.setProductOptionId(2L);
+        optionDto1.setName("그리드2");
+        optionDto1.setAddPrice(30000);
+        optionDto1.setStockQuantity(33);
+
+        dto.setProductOptions(List.of(optionDto1));
+
+        //when
+        ProductResponseDto product = productService.updateProduct(dto);
+
+        //then
+        assertEquals(dto.getName(), product.getName());
+    }
+
+    @Test
+    @Order(3)
+    @Rollback(value = false)
+    public void updateProductInsertOption() throws Exception {
+        //given
+        UpdateProductDto dto = createUpdateProductDto();
+        UpdateProductOptionDto optionDto1 = new UpdateProductOptionDto();
+        optionDto1.setName("그리드3");
+        optionDto1.setAddPrice(40000);
+        optionDto1.setStockQuantity(30);
+        dto.setTotalStockQuantity(130);
+
+        dto.setProductOptions(List.of(optionDto1));
+
+        //when
+        ProductResponseDto product = productService.updateProduct(dto);
+
+        //then
+        assertEquals(dto.getName(), product.getName());
+    }
 
     @Test
     @Order(4)
+    @Rollback(value = false)
     public void 동시성_테스트() throws Exception {
         //given
         int numberOfThreads = 100;
         ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
         CountDownLatch latch = new CountDownLatch(numberOfThreads);
-        AtomicInteger cnt = new AtomicInteger(0);
 
         //when
         for (int i = 0; i < numberOfThreads; i++) {
             executorService.submit(() -> {
                 try {
-                    if (productService.checkStock(1L, 2)) {
-                        cnt.incrementAndGet(); // 성공한 경우 AtomicInteger를 증가시킴
-                    }
+                    OrderItemDto dto = new OrderItemDto();
+                    dto.setProductId(1L);
+                    dto.setProductOptionId(8L);
+                    dto.setQuantity(1);
+
+                    stockUpdater.updateProductStock(List.of(dto));
                 } finally {
                     latch.countDown();
                 }
@@ -137,8 +145,24 @@ class ProductServiceTest {
 
         //then
         Product productEntity = productService.getProductEntity(1L);
-        assertEquals(productEntity.getTotalStockQuantity(), 0);
-        assertEquals(cnt.get(), 50);
+        assertEquals(productEntity.getTotalStockQuantity(), 100);
+    }
+
+    @Test
+    @Order(5)
+    @Rollback(value = false)
+    public void 재고_테스트() throws Exception {
+        //given
+        PaymentCompleteDto dto = new PaymentCompleteDto();
+        dto.setOrderId(1L);
+        dto.setAmount(1000);
+
+        //when
+        productService.updateStock(dto);
+
+        //then
+        Product productEntity = productService.getProductEntity(1L);
+        assertEquals(productEntity.getTotalStockQuantity(), 95);
     }
 
     private UpdateProductDto createUpdateProductDto() {
@@ -150,7 +174,7 @@ class ProductServiceTest {
         dto.setConsumerPrice(31500);
         dto.setDiscountedPrice(3500);
         dto.setIsSold(Boolean.TRUE);
-        dto.setTotalStockQuantity(3000);
+        dto.setTotalStockQuantity(100);
         return dto;
     }
 

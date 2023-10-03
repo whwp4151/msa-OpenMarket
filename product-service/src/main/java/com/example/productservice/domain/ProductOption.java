@@ -74,6 +74,8 @@ public class ProductOption {
             throw new CustomException(HttpStatus.BAD_REQUEST, "need more stock");
         }
         this.stockQuantity = restStock;
+
+        this.product.removeStock(quantity);
     }
 
 }

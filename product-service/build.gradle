@@ -45,6 +45,9 @@ dependencies {
 
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
+	// feign 추가
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
 	//querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa'
 	implementation 'com.querydsl:querydsl-apt'

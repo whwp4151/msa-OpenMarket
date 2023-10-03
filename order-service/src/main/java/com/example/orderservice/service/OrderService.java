@@ -28,6 +28,11 @@ public class OrderService {
     private final OrderCustomRepository orderCustomRepository;
     private final KafkaProducer kafkaProducer;
 
+    public OrderResponseDto getOrder(Long orderId) {
+        Order order = orderCustomRepository.findOrderByIdWithItems(orderId);
+        return OrderResponseDto.of(order);
+    }
+
     @Transactional
     public OrderResponseDto createOrder(OrderRequestDto dto) {
         Delivery delivery = Delivery.create(new Address(dto.getCity(), dto.getStreet(), dto.getZipcode()));

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class DistributedLockAop {
 
     private final RedissonClient redissonClient;
+    private final AopForTransaction aopForTransaction;
 
     @Around("@annotation(DistributedLock)")
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
@@ -34,7 +35,7 @@ public class DistributedLockAop {
             }
 
             log.info("{} 에서 LOCK({}) 획득", method.getName(), distributedLock.key());
-            return joinPoint.proceed();
+            return aopForTransaction.proceed(joinPoint);  // (3)
         } finally {
             if (rLock.isLocked() && rLock.isHeldByCurrentThread()) {
                 rLock.unlock();

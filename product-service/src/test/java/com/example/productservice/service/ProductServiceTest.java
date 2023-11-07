@@ -3,6 +3,7 @@ package com.example.productservice.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.productservice.domain.Product;
+import com.example.productservice.domain.enums.ProductStatus;
 import com.example.productservice.dto.ProductDto.CreateProductDto;
 import com.example.productservice.dto.ProductDto.ProductOptionDto;
 import com.example.productservice.dto.ProductDto.ProductResponseDto;
@@ -46,24 +47,23 @@ class ProductServiceTest {
         dto.setBrandId(1L);
         dto.setPrice(35000);
         dto.setConsumerPrice(31500);
-        dto.setDiscountedPrice(3500);
+        dto.setDiscountedRate(10F);
         dto.setIsSold(Boolean.TRUE);
-        dto.setTotalStockQuantity(100);
 
         ProductOptionDto dto1 = ProductOptionDto.builder()
             .name("그리드")
             .addPrice(3000)
-            .stockQuantity(33)
+            .stock(33)
             .build();
         ProductOptionDto dto2 = ProductOptionDto.builder()
             .name("라인")
             .addPrice(0)
-            .stockQuantity(33)
+            .stock(33)
             .build();
         ProductOptionDto dto3 = ProductOptionDto.builder()
             .name("무지")
             .addPrice(0)
-            .stockQuantity(34)
+            .stock(34)
             .build();
 
         dto.setProductOptions(Arrays.asList(dto1, dto2, dto3));
@@ -106,7 +106,6 @@ class ProductServiceTest {
         optionDto1.setName("그리드3");
         optionDto1.setAddPrice(40000);
         optionDto1.setStockQuantity(30);
-        dto.setTotalStockQuantity(130);
 
         dto.setProductOptions(List.of(optionDto1));
 
@@ -145,7 +144,7 @@ class ProductServiceTest {
 
         //then
         Product productEntity = productService.getProductEntity(1L);
-        assertEquals(productEntity.getTotalStockQuantity(), 100);
+        assertEquals(productEntity.getTotalStock(), 100);
     }
 
     @Test
@@ -162,7 +161,7 @@ class ProductServiceTest {
 
         //then
         Product productEntity = productService.getProductEntity(1L);
-        assertEquals(productEntity.getTotalStockQuantity(), 95);
+        assertEquals(productEntity.getTotalStock(), 95);
     }
 
     private UpdateProductDto createUpdateProductDto() {
@@ -172,9 +171,8 @@ class ProductServiceTest {
         dto.setName("사랑의 물결 일기장 : 복숭아2");
         dto.setPrice(35000);
         dto.setConsumerPrice(31500);
-        dto.setDiscountedPrice(3500);
-        dto.setIsSold(Boolean.TRUE);
-        dto.setTotalStockQuantity(100);
+        dto.setDiscountedRate(10F);
+        dto.setStatus(ProductStatus.ACTIVE);
         return dto;
     }
 

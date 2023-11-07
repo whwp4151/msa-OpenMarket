@@ -37,27 +37,27 @@ public class ProductOption {
 
     private Integer addPrice;
 
-    private Integer stockQuantity;
+    private Integer stock;
 
     @Builder
-    public ProductOption(String name, Integer addPrice, Integer stockQuantity) {
+    public ProductOption(String name, Integer addPrice, Integer stock) {
         this.name = name;
         this.addPrice = addPrice;
-        this.stockQuantity = stockQuantity;
+        this.stock = stock;
     }
 
-    public static ProductOption create(String name, Integer addPrice, Integer stockQuantity) {
+    public static ProductOption create(String name, Integer addPrice, Integer stock) {
         return ProductOption.builder()
             .name(name)
             .addPrice(addPrice)
-            .stockQuantity(stockQuantity)
+            .stock(stock)
             .build();
     }
 
-    public void updateOptionInfo(String name, Integer addPrice, Integer stockQuantity) {
+    public void updateOptionInfo(String name, Integer addPrice, Integer stock) {
         this.name = name;
         this.addPrice = addPrice;
-        this.stockQuantity = stockQuantity;
+        this.stock = stock;
     }
 
     public void setProduct(Product product) {
@@ -65,17 +65,15 @@ public class ProductOption {
     }
 
     public void addStock(int quantity) {
-        this.stockQuantity += quantity;
+        this.stock += quantity;
     }
 
     public void removeStock(int quantity) {
-        int restStock = this.stockQuantity - quantity;
+        int restStock = this.stock - quantity;
         if (restStock < 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "need more stock");
         }
-        this.stockQuantity = restStock;
-
-        this.product.removeStock(quantity);
+        this.stock = restStock;
     }
 
 }

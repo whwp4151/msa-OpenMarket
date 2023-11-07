@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -62,11 +61,11 @@ public class ProductService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Cannot create a product under a top-level category");
         }
 
-        Product product = Product.create(dto.getName(), dto.getPrice(), dto.getConsumerPrice(), dto.getDiscountedPrice(), dto.getIsSold(), dto.getBrandId(), dto.getTotalStockQuantity(), category);
+        Product product = Product.create(dto.getName(), dto.getPrice(), dto.getConsumerPrice(), dto.getDiscountedRate(), dto.getIsSold(), dto.getBrandId(), category);
 
         if (!CollectionUtils.isEmpty(dto.getProductOptions())) {
             for (ProductOptionDto optionDto : dto.getProductOptions()) {
-                ProductOption productOption = ProductOption.create(optionDto.getName(), optionDto.getAddPrice(), optionDto.getStockQuantity());
+                ProductOption productOption = ProductOption.create(optionDto.getName(), optionDto.getAddPrice(), optionDto.getStock());
                 product.addProductOption(productOption);
             }
         }
@@ -103,7 +102,7 @@ public class ProductService {
             throw new CustomException(HttpStatus.NOT_FOUND, "Product not found");
         }
 
-        product.updateProductInfo(dto.getName(), dto.getPrice(), dto.getConsumerPrice(), dto.getDiscountedPrice(), dto.getIsSold(), dto.getTotalStockQuantity(), category, dto.getProductOptions());
+        product.updateProductInfo(dto.getName(), dto.getPrice(), dto.getConsumerPrice(), dto.getDiscountedRate(), dto.getStatus(), category, dto.getProductOptions());
 
         this.saveProductLog(product);
 

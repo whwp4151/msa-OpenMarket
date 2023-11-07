@@ -1,5 +1,6 @@
 package com.example.productservice.domain;
 
+import com.example.productservice.domain.enums.ProductStatus;
 import com.example.productservice.dto.ProductDto.UpdateProductOptionDto;
 import com.example.productservice.exception.CustomException;
 import java.util.ArrayList;
@@ -43,13 +44,11 @@ public class Product extends BaseEntity {
 
     private Integer consumerPrice; // 소비자가
 
-    private Integer discountedPrice; // 할인 가격
+    private Float discountedRate; // 할인율
 
-    private Boolean isSold; // 판매 여부
+    private ProductStatus status;
 
     private Long brandId;
-
-    private Integer totalStockQuantity;
 
     // Versioning
     private Integer version = 1;
@@ -62,37 +61,34 @@ public class Product extends BaseEntity {
     private List<ProductOption> productOptions = new ArrayList<>();
 
     @Builder
-    public Product(String name, Integer price, Integer consumerPrice, Integer discountedPrice, Boolean isSold, Long brandId, Integer totalStockQuantity, Category category) {
+    public Product(String name, Integer price, Integer consumerPrice, Float discountedRate, Boolean isSold, Long brandId, Category category) {
         this.name = name;
         this.price = price;
         this.consumerPrice = consumerPrice;
-        this.discountedPrice = discountedPrice;
-        this.isSold = isSold == null ? Boolean.FALSE : isSold;
+        this.discountedRate = discountedRate;
+        this.status = isSold == null || !isSold ? ProductStatus.PENDING : ProductStatus.ACTIVE;
         this.brandId = brandId;
-        this.totalStockQuantity = totalStockQuantity;
         this.category = category;
     }
 
-    public static Product create(String name, Integer price, Integer consumerPrice, Integer discountedPrice, Boolean isSold, Long brandId, Integer totalStockQuantity, Category category) {
+    public static Product create(String name, Integer price, Integer consumerPrice, Float discountedRate, Boolean isSold, Long brandId, Category category) {
         return Product.builder()
             .name(name)
             .price(price)
             .consumerPrice(consumerPrice)
-            .discountedPrice(discountedPrice)
+            .discountedRate(discountedRate)
             .isSold(isSold)
             .brandId(brandId)
-            .totalStockQuantity(totalStockQuantity)
             .category(category)
             .build();
     }
 
-    public void updateProductInfo(String name, Integer price, Integer consumerPrice, Integer discountedPrice, Boolean isSold, Integer totalStockQuantity, Category category, List<UpdateProductOptionDto> productOptions) {
+    public void updateProductInfo(String name, Integer price, Integer consumerPrice, Float discountedRate, ProductStatus status, Category category, List<UpdateProductOptionDto> productOptions) {
         this.name = name;
         this.price = price;
         this.consumerPrice = consumerPrice;
-        this.discountedPrice = discountedPrice;
-        this.isSold = isSold;
-        this.totalStockQuantity = totalStockQuantity;
+        this.discountedRate = discountedRate;
+        this.status = status;
         this.category = category;
         this.version++;
 
@@ -124,16 +120,8 @@ public class Product extends BaseEntity {
             .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Product option not found"));
     }
 
-    public void addStock(int quantity) {
-        this.totalStockQuantity += quantity;
-    }
-
-    public void removeStock(int quantity) {
-        int restStock = this.totalStockQuantity - quantity;
-        if (restStock < 0) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "need more stock");
-        }
-        this.totalStockQuantity = restStock;
+    public int getTotalStock() {
+        return productOptions.stream().mapToInt(ProductOption::getStock).sum();
     }
 
 }

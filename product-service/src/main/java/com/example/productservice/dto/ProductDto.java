@@ -2,6 +2,7 @@ package com.example.productservice.dto;
 
 import com.example.productservice.domain.Product;
 import com.example.productservice.domain.ProductOption;
+import com.example.productservice.domain.enums.ProductStatus;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -19,13 +20,11 @@ public class ProductDto {
 
         private Integer consumerPrice; // 소비자가
 
-        private Integer discountedPrice; // 할인 가격
+        private Float discountedRate; // 할인율
 
         private Boolean isSold; // 판매 여부
 
         private Long brandId;
-
-        private Integer totalStockQuantity;
 
         private String categoryId;
 
@@ -42,13 +41,13 @@ public class ProductDto {
 
         private Integer addPrice;
 
-        private Integer stockQuantity;
+        private Integer stock;
 
         public static ProductOptionDto of(ProductOption productOption) {
             return ProductOptionDto.builder()
                 .name(productOption.getName())
                 .addPrice(productOption.getAddPrice())
-                .stockQuantity(productOption.getStockQuantity())
+                .stock(productOption.getStock())
                 .build();
         }
 
@@ -66,9 +65,9 @@ public class ProductDto {
 
         private Integer consumerPrice; // 소비자가
 
-        private Integer discountedPrice; // 할인 가격
+        private Float discountedRate; // 할인율
 
-        private Boolean isSold; // 판매 여부
+        private String productStatus;
 
         private Long brandId;
 
@@ -85,10 +84,10 @@ public class ProductDto {
                 .name(product.getName())
                 .price(product.getPrice())
                 .consumerPrice(product.getConsumerPrice())
-                .discountedPrice(product.getDiscountedPrice())
-                .isSold(product.getIsSold())
+                .discountedRate(product.getDiscountedRate())
+                .productStatus(product.getStatus().getDescription())
                 .brandId(product.getBrandId())
-                .totalStockQuantity(product.getTotalStockQuantity())
+                .totalStockQuantity(product.getTotalStock())
                 .categoryId(product.getCategory().getCategoryId())
                 .productOptions(CollectionUtils.isEmpty(product.getProductOptions()) ? null :
                     product.getProductOptions().stream()
@@ -110,11 +109,9 @@ public class ProductDto {
 
         private Integer consumerPrice; // 소비자가
 
-        private Integer discountedPrice; // 할인 가격
+        private Float discountedRate; // 할인율
 
-        private Boolean isSold; // 판매 여부
-
-        private Integer totalStockQuantity;
+        private ProductStatus status;
 
         private String categoryId;
 

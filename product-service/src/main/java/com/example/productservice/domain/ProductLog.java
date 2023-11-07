@@ -1,5 +1,6 @@
 package com.example.productservice.domain;
 
+import com.example.productservice.domain.enums.ProductStatus;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,13 +34,11 @@ public class ProductLog extends BaseEntity {
 
     private Integer consumerPrice; // 소비자가
 
-    private Integer discountedPrice; // 할인 가격
+    private Float discountedRate; // 할인율
 
-    private Boolean isSold; // 판매 여부
+    private ProductStatus status;
 
     private Long brandId;
-
-    private Integer totalStockQuantity;
 
     // Versioning
     private Integer version;
@@ -47,15 +46,14 @@ public class ProductLog extends BaseEntity {
     private String categoryId;
 
     @Builder
-    public ProductLog(Long productId, String name, Integer price, Integer consumerPrice, Integer discountedPrice, Boolean isSold, Long brandId, Integer totalStockQuantity, Integer version, String categoryId) {
+    public ProductLog(Long productId, String name, Integer price, Integer consumerPrice, Float discountedRate, ProductStatus status, Long brandId, Integer version, String categoryId) {
         this.productId = productId;
         this.name = name;
         this.price = price;
         this.consumerPrice = consumerPrice;
-        this.discountedPrice = discountedPrice;
-        this.isSold = isSold;
+        this.discountedRate = discountedRate;
+        this.status = status;
         this.brandId = brandId;
-        this.totalStockQuantity = totalStockQuantity;
         this.version = version;
         this.categoryId = categoryId;
     }
@@ -66,10 +64,9 @@ public class ProductLog extends BaseEntity {
             .name(product.getName())
             .price(product.getPrice())
             .consumerPrice(product.getConsumerPrice())
-            .discountedPrice(product.getDiscountedPrice())
-            .isSold(product.getIsSold())
+            .discountedRate(product.getDiscountedRate())
+            .status(product.getStatus())
             .brandId(product.getBrandId())
-            .totalStockQuantity(product.getTotalStockQuantity())
             .version(product.getVersion())
             .categoryId(product.getCategory().getCategoryId())
             .build();

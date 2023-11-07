@@ -1,6 +1,6 @@
-package com.example.orderservice.exception;
+package com.example.orderservice.security;
 
-import com.example.orderservice.dto.Result;
+import com.example.orderservice.ui.Result;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 

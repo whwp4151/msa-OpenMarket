@@ -1,4 +1,4 @@
-package com.example.orderservice.dto;
+package com.example.orderservice.application;
 
 import com.example.orderservice.domain.Address;
 import com.example.orderservice.domain.Order;

@@ -1,6 +1,7 @@
-package com.example.orderservice.message;
+package com.example.orderservice.infra;
 
-import com.example.orderservice.dto.OrderDto.PaymentCompleteDto;
+import com.example.orderservice.application.KafkaProducer;
+import com.example.orderservice.application.OrderDto.PaymentCompleteDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class KafkaProducer {
+public class KafkaProducerImpl implements KafkaProducer {
 
     private static final String PAYMENT_COMPLETE_TOPIC = "payment-complete";
     private final KafkaTemplate<String, String> kafkaTemplate;

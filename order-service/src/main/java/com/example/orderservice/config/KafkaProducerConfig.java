@@ -1,4 +1,4 @@
-package com.example.orderservice.message;
+package com.example.orderservice.config;
 
 import java.util.HashMap;
 import java.util.Map;

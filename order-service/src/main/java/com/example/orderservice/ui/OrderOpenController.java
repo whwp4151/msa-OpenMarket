@@ -1,4 +1,4 @@
-package com.example.orderservice.controller;
+package com.example.orderservice.ui;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

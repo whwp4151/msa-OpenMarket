@@ -1,4 +1,4 @@
-package com.example.orderservice.repository;
+package com.example.orderservice.infra;
 
 import static com.example.orderservice.domain.QDelivery.delivery;
 import static com.example.orderservice.domain.QOrder.order;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class OrderCustomRepository {
+public class OrderQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 

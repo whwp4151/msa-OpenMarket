@@ -1,6 +1,7 @@
-package com.example.orderservice.exception;
+package com.example.orderservice.ui;
 
-import com.example.orderservice.dto.Result;
+import com.example.orderservice.security.CustomException;
+import com.example.orderservice.ui.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

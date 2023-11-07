@@ -1,8 +1,7 @@
-package com.example.orderservice.controller;
+package com.example.orderservice.ui;
 
-import com.example.orderservice.dto.OrderDto.OrderResponseDto;
-import com.example.orderservice.dto.Result;
-import com.example.orderservice.service.OrderService;
+import com.example.orderservice.application.OrderDto.OrderResponseDto;
+import com.example.orderservice.application.OrderFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,11 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    private final OrderFacade orderFacade;
 
     @GetMapping("/order/{id}")
     public ResponseEntity<Result> getOrder(@PathVariable("id") Long id) {
-        OrderResponseDto order = orderService.getOrder(id);
+        OrderResponseDto order = orderFacade.getOrder(id);
         return ResponseEntity.ok(Result.createSuccessResult(order));
     }
 

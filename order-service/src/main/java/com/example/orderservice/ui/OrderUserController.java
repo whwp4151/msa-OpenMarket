@@ -1,14 +1,13 @@
-package com.example.orderservice.controller;
+package com.example.orderservice.ui;
 
-import com.example.orderservice.dto.OrderDto.OrderRequestDto;
-import com.example.orderservice.dto.OrderDto.OrderResponseDto;
-import com.example.orderservice.dto.OrderDto.PaymentCompleteDto;
-import com.example.orderservice.dto.Result;
-import com.example.orderservice.service.OrderService;
+import com.example.orderservice.application.OrderDto.OrderRequestDto;
+import com.example.orderservice.application.OrderDto.OrderResponseDto;
+import com.example.orderservice.application.OrderDto.PaymentCompleteDto;
+import com.example.orderservice.application.OrderFacade;
+import com.example.orderservice.domain.OrderService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class OrderUserController {
 
-    private final OrderService orderService;
+    private final OrderFacade orderFacade;
 
     // 주문생성
     @PostMapping("/order")
@@ -28,14 +27,14 @@ public class OrderUserController {
                                             @RequestHeader(value = "user_id") String userId) {
         System.out.println("Order start" + userId);
         dto.setUserId(1L);
-        OrderResponseDto responseDto = orderService.createOrder(dto);
+        OrderResponseDto responseDto = orderFacade.createOrder(dto);
         return ResponseEntity.ok(Result.createSuccessResult(responseDto));
     }
 
     // 결제완료
     @PostMapping("/payment/complete")
     public ResponseEntity<Result> paymentComplete(@RequestBody PaymentCompleteDto dto) {
-        OrderResponseDto responseDto = orderService.paymentComplete(dto);
+        OrderResponseDto responseDto = orderFacade.paymentComplete(dto);
         return ResponseEntity.ok(Result.createSuccessResult(responseDto));
     }
 

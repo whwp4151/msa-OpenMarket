@@ -2,11 +2,11 @@ package com.example.orderservice.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.example.orderservice.domain.enums.OrderStatus;
-import com.example.orderservice.dto.OrderDto.OrderItemDto;
-import com.example.orderservice.dto.OrderDto.OrderRequestDto;
-import com.example.orderservice.dto.OrderDto.OrderResponseDto;
-import com.example.orderservice.dto.OrderDto.PaymentCompleteDto;
+import com.example.orderservice.domain.OrderService;
+import com.example.orderservice.application.OrderDto.OrderItemDto;
+import com.example.orderservice.application.OrderDto.OrderRequestDto;
+import com.example.orderservice.application.OrderDto.OrderResponseDto;
+import com.example.orderservice.application.OrderDto.PaymentCompleteDto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;

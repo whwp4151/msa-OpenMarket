@@ -1,20 +1,12 @@
-package com.example.orderservice.service;
+package com.example.orderservice.domain;
 
-import com.example.orderservice.domain.Address;
-import com.example.orderservice.domain.Delivery;
-import com.example.orderservice.domain.Order;
-import com.example.orderservice.domain.OrderItem;
-import com.example.orderservice.domain.Payment;
 import com.example.orderservice.domain.enums.OrderStatus;
 import com.example.orderservice.domain.enums.PaymentStatus;
-import com.example.orderservice.dto.OrderDto.OrderItemDto;
-import com.example.orderservice.dto.OrderDto.OrderRequestDto;
-import com.example.orderservice.dto.OrderDto.OrderResponseDto;
-import com.example.orderservice.dto.OrderDto.PaymentCompleteDto;
-import com.example.orderservice.exception.CustomException;
-import com.example.orderservice.message.KafkaProducer;
-import com.example.orderservice.repository.OrderCustomRepository;
-import com.example.orderservice.repository.OrderRepository;
+import com.example.orderservice.application.OrderDto.OrderItemDto;
+import com.example.orderservice.application.OrderDto.OrderRequestDto;
+import com.example.orderservice.application.OrderDto.OrderResponseDto;
+import com.example.orderservice.application.OrderDto.PaymentCompleteDto;
+import com.example.orderservice.security.CustomException;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,11 +17,9 @@ import org.springframework.stereotype.Service;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final OrderCustomRepository orderCustomRepository;
-    private final KafkaProducer kafkaProducer;
 
     public OrderResponseDto getOrder(Long orderId) {
-        Order order = orderCustomRepository.findOrderByIdWithItems(orderId);
+        Order order = orderRepository.findOrderByIdWithItems(orderId);
         return OrderResponseDto.of(order);
     }
 
@@ -44,26 +34,25 @@ public class OrderService {
             order.addOrderItem(orderItem);
         }
 
-        orderRepository.save(order);
+        orderRepository.saveOrder(order);
 
         return OrderResponseDto.of(order);
     }
 
     @Transactional
     public OrderResponseDto paymentComplete(PaymentCompleteDto dto) {
-        Order order = orderCustomRepository.findOrderByIdWithItems(dto.getOrderId());
+        Order order = orderRepository.findOrderByIdWithItems(dto.getOrderId());
 
         Payment payment = Payment.create(dto.getAmount(), PaymentStatus.PAYMENT_COMPLETED);
         order.setPayment(payment);
 
-        kafkaProducer.paymentComplete(dto);
         return OrderResponseDto.of(order);
     }
 
     // 배치 or api 처리
     @Transactional
     public OrderResponseDto confirmPayment(Long orderId) {
-        Order order = orderCustomRepository.findOrderByIdWithItems(orderId);
+        Order order = orderRepository.findOrderByIdWithItems(orderId);
 
         if (order.getPayment() == null || order.getPayment().getStatus() != PaymentStatus.PAYMENT_COMPLETED) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Payment must be completed");
@@ -75,7 +64,7 @@ public class OrderService {
 
     @Transactional
     public OrderResponseDto preparingDelivery(Long orderId) {
-        Order order = orderCustomRepository.findOrderByIdWithItems(orderId);
+        Order order = orderRepository.findOrderByIdWithItems(orderId);
 
         if (OrderStatus.ITEM_PREPARING != order.getStatus()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Order must be item preparing");

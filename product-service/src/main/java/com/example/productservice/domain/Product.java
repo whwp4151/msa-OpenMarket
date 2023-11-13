@@ -1,8 +1,8 @@
 package com.example.productservice.domain;
 
 import com.example.productservice.domain.enums.ProductStatus;
-import com.example.productservice.dto.ProductDto.UpdateProductOptionDto;
-import com.example.productservice.exception.CustomException;
+import com.example.productservice.application.ProductDto.UpdateProductOptionDto;
+import com.example.productservice.security.CustomException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;

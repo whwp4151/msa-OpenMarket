@@ -1,6 +1,6 @@
 package com.example.productservice.domain;
 
-import com.example.productservice.exception.CustomException;
+import com.example.productservice.security.CustomException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

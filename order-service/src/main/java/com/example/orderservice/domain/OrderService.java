@@ -34,7 +34,7 @@ public class OrderService {
             order.addOrderItem(orderItem);
         }
 
-        orderRepository.saveOrder(order);
+        orderRepository.save(order);
 
         return OrderResponseDto.of(order);
     }

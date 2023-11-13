@@ -16,7 +16,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         return orderQueryRepository.findOrderByIdWithItems(orderId);
     }
 
-    public Order saveOrder(Order order) {
+    public Order save(Order order) {
         return orderJpaRepository.save(order);
     }
 

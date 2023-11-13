@@ -3,14 +3,16 @@ package com.example.productservice.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.productservice.domain.Product;
+import com.example.productservice.domain.ProductService;
+import com.example.productservice.domain.StockUpdater;
 import com.example.productservice.domain.enums.ProductStatus;
-import com.example.productservice.dto.ProductDto.CreateProductDto;
-import com.example.productservice.dto.ProductDto.ProductOptionDto;
-import com.example.productservice.dto.ProductDto.ProductResponseDto;
-import com.example.productservice.dto.ProductDto.UpdateProductDto;
-import com.example.productservice.dto.ProductDto.UpdateProductOptionDto;
-import com.example.productservice.message.dto.OrderDto.OrderItemDto;
-import com.example.productservice.message.dto.OrderDto.PaymentCompleteDto;
+import com.example.productservice.application.ProductDto.CreateProductDto;
+import com.example.productservice.application.ProductDto.ProductOptionDto;
+import com.example.productservice.application.ProductDto.ProductResponseDto;
+import com.example.productservice.application.ProductDto.UpdateProductDto;
+import com.example.productservice.application.ProductDto.UpdateProductOptionDto;
+import com.example.productservice.application.order.OrderDto.OrderItemDto;
+import com.example.productservice.application.order.OrderDto.PaymentCompleteDto;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -69,7 +71,7 @@ class ProductServiceTest {
         dto.setProductOptions(Arrays.asList(dto1, dto2, dto3));
 
         //when
-        ProductResponseDto product = productService.createProduct(dto);
+        Product product = productService.createProduct(dto);
 
         //then
         assertEquals(dto.getName(), product.getName());
@@ -90,7 +92,7 @@ class ProductServiceTest {
         dto.setProductOptions(List.of(optionDto1));
 
         //when
-        ProductResponseDto product = productService.updateProduct(dto);
+        Product product = productService.updateProduct(dto);
 
         //then
         assertEquals(dto.getName(), product.getName());
@@ -110,7 +112,7 @@ class ProductServiceTest {
         dto.setProductOptions(List.of(optionDto1));
 
         //when
-        ProductResponseDto product = productService.updateProduct(dto);
+        Product product = productService.updateProduct(dto);
 
         //then
         assertEquals(dto.getName(), product.getName());
@@ -157,7 +159,7 @@ class ProductServiceTest {
         dto.setAmount(1000);
 
         //when
-        productService.updateStock(dto);
+        stockUpdater.updateStock(dto);
 
         //then
         Product productEntity = productService.getProductEntity(1L);

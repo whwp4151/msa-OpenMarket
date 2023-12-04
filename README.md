@@ -10,4 +10,6 @@
  - Test : Junit5
 
 # 도메인 설계
-<img width="481" alt="스크린샷 2023-12-04 오후 6 44 39" src="https://github.com/whwp4151/msa-OpenMarket/assets/91665074/ca1c4229-0d38-4af9-8d71-105719abc4aa">
+<img width="762" alt="스크린샷 2023-12-04 오후 6 47 13" src="https://github.com/whwp4151/msa-OpenMarket/assets/91665074/87c89ee2-1736-491b-8ff5-610206e9d4cc">
+<img width="763" alt="스크린샷 2023-12-04 오후 6 47 29" src="https://github.com/whwp4151/msa-OpenMarket/assets/91665074/db6c0370-968a-4a46-84d6-344a3b1a18db">
+
